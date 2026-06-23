@@ -1,126 +1,123 @@
 import { useState } from "react";
 
+// ─── 데이터 ────────────────────────────────────────────
 const TREATMENTS = [
-  "임플란트",
-  "DIAnate 라미네이트",
-  "Wedding Glow",
-  "투명교정",
-  "원데이 인레이",
-  "치아미백",
-  "턱관절 치료",
-  "일반진료",
+  { id: "임플란트",        icon: "🦷", label: "임플란트" },
+  { id: "DIAnate 라미네이트", icon: "✨", label: "DIAnate\n라미네이트" },
+  { id: "Wedding Glow",  icon: "💍", label: "Wedding\nGlow" },
+  { id: "투명교정",        icon: "😁", label: "투명교정" },
+  { id: "원데이 인레이",   icon: "⚡", label: "원데이\n인레이" },
+  { id: "치아미백",        icon: "🌟", label: "치아미백" },
+  { id: "턱관절 치료",     icon: "💆", label: "턱관절\n치료" },
+  { id: "일반진료",        icon: "🏥", label: "일반진료" },
 ];
 
 const SATISFACTIONS = [
-  "설명이 자세했어요",
-  "통증이 적었어요",
-  "친절했어요",
-  "시설이 깨끗했어요",
-  "결과가 만족스러워요",
-  "대기시간이 짧아요",
+  { id: "설명이 자세했어요", icon: "💬", label: "자세한 설명" },
+  { id: "통증이 적었어요",   icon: "🤗", label: "통증 배려" },
+  { id: "친절했어요",        icon: "✅", label: "친절함" },
+  { id: "시설이 깨끗했어요", icon: "🧹", label: "청결·위생" },
+  { id: "결과가 만족스러워요",icon: "💰", label: "결과 만족" },
+  { id: "대기시간이 짧아요", icon: "😊", label: "빠른 진료" },
 ];
 
-const VISIT_TYPES = ["첫 방문", "재방문"];
-const REVIEW_STYLES = ["짧게", "자연스럽게", "자세하게"];
-
-// ─── 하단 고정 버튼 설정 ──────────────────────────────
-// 실제 URL / 전화번호로 변경해주세요
-const BOTTOM_BUTTONS = [
-  {
-    label: "네이버\n리뷰",
-    bg: "#03C75A",
-    text: "N",
-    url: "https://map.naver.com/p/search/%EC%84%9C%EC%9A%B8%EB%94%94%EC%95%84%EC%B9%98%EA%B3%BC",
-  },
-  {
-    label: "구글\n리뷰",
-    bg: "#4285F4",
-    text: "G",
-    url: "https://www.google.com/maps/search/%EC%84%9C%EC%9A%B8%EB%94%94%EC%95%84%EC%B9%98%EA%B3%BC",
-  },
-  {
-    label: "전화\n하기",
-    bg: "#0F2356",
-    text: "📞",
-    url: "tel:02-000-0000",
-  },
-  {
-    label: "길\n찾기",
-    bg: "#FF6B35",
-    text: "📍",
-    url: "https://map.naver.com/p/search/%EC%84%9C%EC%9A%B8%EB%94%94%EC%95%84%EC%B9%98%EA%B3%BC",
-  },
+const VISIT_TYPES = [
+  { id: "처음 방문", sub: "첫 진료·상담" },
+  { id: "재방문",   sub: "다시 방문" },
 ];
 
-// ─── 색상 상수 ─────────────────────────────────────────
-const NAVY = "#0F2356";
-const NAVY_LIGHT = "#1a3a7c";
-const SKY = "#4A90D9";
-const LIGHT_BLUE = "#EBF4FF";
-const MID_BLUE = "#B8D4F8";
+const WRITE_MODES = [
+  { id: "AI",   label: "AI 문구 생성",  sub: "선택값 기반 자동 작성" },
+  { id: "SELF", label: "직접 입력",      sub: "내가 직접 작성" },
+];
 
+const REVIEW_STYLES = [
+  { id: "짧게",       label: "짧게" },
+  { id: "자연스럽게", label: "자연스럽게" },
+  { id: "자세하게",   label: "자세하게" },
+];
+
+// ─── 색상 ──────────────────────────────────────────────
+const NAVY   = "#0D2461";
+const BLUE   = "#2563EB";
+const LBLUE  = "#EFF6FF";
+const BORDER = "#E2E8F0";
+const GOLD   = "#F59E0B";
+
+// ─── 하단 버튼 (URL/전화번호 수정) ────────────────────
+const NAV_BUTTONS = [
+  { label: "네이버\n리뷰", bg: "#03C75A", icon: "N",  url: "https://map.naver.com/p/search/%EC%84%9C%EC%9A%B8%EB%94%94%EC%95%84%EC%B9%98%EA%B3%BC" },
+  { label: "구글\n리뷰",   bg: "#4285F4", icon: "G",  url: "https://www.google.com/maps/search/%EC%84%9C%EC%9A%B8%EB%94%94%EC%95%84%EC%B9%98%EA%B3%BC" },
+  { label: "전화\n하기",   bg: NAVY,      icon: "📞", url: "tel:02-000-0000" },
+  { label: "길\n찾기",     bg: "#FF6B35", icon: "📍", url: "https://map.naver.com/p/search/%EC%84%9C%EC%9A%B8%EB%94%94%EC%95%84%EC%B9%98%EA%B3%BC" },
+];
+
+// ─── 섹션 번호 배지 ────────────────────────────────────
+function NumBadge({ n }: { n: number }) {
+  return (
+    <span style={{
+      display: "inline-flex", alignItems: "center", justifyContent: "center",
+      width: 22, height: 22, borderRadius: "50%",
+      background: BLUE, color: "white",
+      fontSize: 11, fontWeight: 700, marginRight: 6, flexShrink: 0,
+    }}>
+      {n}
+    </span>
+  );
+}
+
+// ─── 섹션 래퍼 ────────────────────────────────────────
+function Section({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
+  return (
+    <div style={{ marginBottom: 12 }}>
+      <div style={{ display: "flex", alignItems: "center", marginBottom: 10, paddingLeft: 2 }}>
+        <NumBadge n={n} />
+        <span style={{ fontSize: 13, fontWeight: 700, color: BLUE, letterSpacing: -0.2 }}>
+          {title}
+        </span>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+// ─── 메인 ─────────────────────────────────────────────
 export default function App() {
-  const [selectedTreatments, setSelectedTreatments] = useState<string[]>([]);
-  const [selectedSatisfactions, setSelectedSatisfactions] = useState<string[]>([]);
-  const [visitType, setVisitType] = useState<string>("");
+  const [writeMode, setWriteMode] = useState<"AI" | "SELF">("AI");
+  const [visitType, setVisitType] = useState<string>("처음 방문");
   const [reviewStyle, setReviewStyle] = useState<string>("자연스럽게");
-  const [generatedReview, setGeneratedReview] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [treatments, setTreatments] = useState<string[]>([]);
+  const [satisfactions, setSatisfactions] = useState<string[]>([]);
+  const [selfText, setSelfText] = useState<string>("");
+  const [review, setReview] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  const [err, setErr] = useState<string>("");
 
-  const toggleTreatment = (t: string) =>
-    setSelectedTreatments((prev) =>
-      prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]
-    );
-
-  const toggleSatisfaction = (s: string) =>
-    setSelectedSatisfactions((prev) =>
-      prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]
-    );
+  const toggleArr = (arr: string[], set: React.Dispatch<React.SetStateAction<string[]>>, v: string) =>
+    set(arr.includes(v) ? arr.filter(x => x !== v) : [...arr, v]);
 
   const generateReview = async () => {
-    if (selectedTreatments.length === 0) {
-      setError("치료 항목을 하나 이상 선택해주세요.");
-      return;
+    if (writeMode === "AI" && treatments.length === 0) {
+      setErr("치료 항목을 하나 이상 선택해주세요."); return;
     }
-    setError("");
-    setIsLoading(true);
-    setGeneratedReview("");
+    setErr(""); setLoading(true); setReview("");
 
-    const lengthGuide =
-      reviewStyle === "짧게"
-        ? "80~100자"
-        : reviewStyle === "자연스럽게"
-        ? "100~130자"
-        : "130~180자";
+    const lenMap: Record<string, string> = { "짧게": "80~100자", "자연스럽게": "100~130자", "자세하게": "130~180자" };
+    const styleMap: Record<string, string> = { "짧게": "간결하게", "자연스럽게": "자연스럽고 솔직하게", "자세하게": "구체적으로 상세히" };
 
     const prompt = `서울디아치과 환자 리뷰를 작성해줘.
 
-조건:
-- 병원명: 서울디아치과
-- 치료 항목: ${selectedTreatments.join(", ")}
-- 만족한 점: ${
-      selectedSatisfactions.length > 0
-        ? selectedSatisfactions.join(", ")
-        : "전반적으로 만족"
-    }
-- 방문 유형: ${visitType || "병원 방문"}
-- 목표 글자 수: ${lengthGuide}
-- 문체: ${
-      reviewStyle === "짧게"
-        ? "간결하고 핵심만 담아서"
-        : reviewStyle === "자연스럽게"
-        ? "자연스럽고 솔직한 말투로"
-        : "경험을 구체적으로 상세히"
-    }
+치료 항목: ${treatments.join(", ")}
+만족한 점: ${satisfactions.length ? satisfactions.join(", ") : "전반적으로 만족"}
+방문 유형: ${visitType}
+목표 글자 수: ${lenMap[reviewStyle]}
+문체: ${styleMap[reviewStyle]}
 
 반드시 지켜야 할 규칙:
-1. 다음 단어·표현은 절대 사용 금지: 최고, 최선, 유일, 보장, 완치, 무통, 반드시, 확실히, 놀라운, 기적, 완벽, 탁월한, 압도적인, 특효, 획기적
-2. 의료광고법에 위반되는 과장·비교·치료 효과 단정 표현 금지
-3. 한국어로만 작성
-4. 리뷰 텍스트만 출력 (따옴표, 설명, 머릿말 없이 바로 본문만)
-5. 실제 환자가 직접 쓴 것처럼 자연스럽게`;
+1. 절대 사용 금지: 최고, 유일, 보장, 완치, 무통, 반드시, 확실히, 놀라운, 기적, 완벽, 탁월한, 압도적인, 특효, 획기적
+2. 의료광고법 위반 과장·비교 표현 금지
+3. 한국어만, 리뷰 텍스트만 출력 (따옴표·머릿말 없이 바로 본문)`;
 
     try {
       const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -132,530 +129,492 @@ export default function App() {
           messages: [{ role: "user", content: prompt }],
         }),
       });
-      const data = await res.json();
-      const text =
-        data.content?.map((i: { type: string; text?: string }) => i.text ?? "").join("") ?? "";
-      setGeneratedReview(text.trim());
+      const d = await res.json();
+      setReview(d.content?.map((i: { type: string; text?: string }) => i.text ?? "").join("").trim() || "오류가 발생했어요.");
     } catch {
-      setGeneratedReview("리뷰 생성 중 오류가 발생했어요. 다시 시도해주세요.");
+      setReview("오류가 발생했어요. 다시 시도해주세요.");
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const copyReview = async () => {
-    if (!generatedReview) return;
-    await navigator.clipboard.writeText(generatedReview);
+  const copyText = async () => {
+    const text = writeMode === "SELF" ? selfText : review;
+    if (!text) return;
+    await navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
 
+  const displayText = writeMode === "SELF" ? selfText : review;
+
   return (
-    <div
-      style={{
-        fontFamily:
-          "'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif",
-        backgroundColor: "#F4F8FD",
-        minHeight: "100vh",
-        maxWidth: 430,
-        margin: "0 auto",
-        paddingBottom: 88,
+    <div style={{
+      fontFamily: "'Apple SD Gothic Neo','Noto Sans KR',sans-serif",
+      background: "#F8FAFC",
+      minHeight: "100vh",
+      maxWidth: 430,
+      margin: "0 auto",
+      paddingBottom: 100,
+    }}>
+
+      {/* ── 헤더 ── */}
+      <div style={{
+        background: "white",
+        textAlign: "center",
+        padding: "28px 20px 22px",
+        borderBottom: `1px solid ${BORDER}`,
         position: "relative",
-      }}
-    >
-      {/* ─── 헤더 ───────────────────────────────────── */}
-      <header
-        style={{
-          background: NAVY,
-          padding: "18px 20px 14px",
-          position: "sticky",
-          top: 0,
-          zIndex: 100,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div
-            style={{
-              width: 38,
-              height: 38,
-              background: SKY,
-              borderRadius: 10,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 19,
-              fontWeight: 800,
-              color: "white",
-              letterSpacing: -1,
-            }}
-          >
-            D
-          </div>
-          <div>
-            <div
-              style={{
-                color: "white",
-                fontSize: 17,
-                fontWeight: 700,
-                letterSpacing: -0.5,
-              }}
-            >
-              서울디아치과
-            </div>
-            <div style={{ color: MID_BLUE, fontSize: 11, marginTop: 1 }}>
-              AI 리뷰 작성 도우미
-            </div>
-          </div>
-          <div
-            style={{
-              marginLeft: "auto",
-              background: "rgba(255,255,255,0.12)",
-              padding: "4px 10px",
-              borderRadius: 20,
-              color: "white",
-              fontSize: 11,
-              fontWeight: 500,
-            }}
-          >
-            ✨ AI 생성
-          </div>
+      }}>
+        <div style={{
+          width: 64, height: 64,
+          background: LBLUE,
+          borderRadius: "50%",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 30, margin: "0 auto 12px",
+        }}>
+          🦷
         </div>
-      </header>
+        <h1 style={{ color: NAVY, fontSize: 22, fontWeight: 800, margin: "0 0 6px", letterSpacing: -0.5 }}>
+          서울디아치과
+        </h1>
+        <p style={{ color: "#64748B", fontSize: 13.5, margin: 0, lineHeight: 1.6 }}>
+          치료와 경험을 선택하면<br />
+          리뷰 작성 문구를 만들어 드립니다
+        </p>
+      </div>
 
-      {/* ─── 본문 ───────────────────────────────────── */}
-      <main style={{ padding: "14px 14px 0" }}>
-        {/* 안내 배너 */}
-        <div
-          style={{
-            background: LIGHT_BLUE,
-            border: `1px solid ${MID_BLUE}`,
-            borderRadius: 12,
-            padding: "11px 14px",
-            marginBottom: 12,
-            fontSize: 12.5,
-            color: NAVY_LIGHT,
-            lineHeight: 1.6,
-          }}
-        >
-          🦷 치료 항목과 만족한 점을 선택하면, AI가 자연스러운 리뷰를 만들어
-          드려요.
-        </div>
+      {/* ── 본문 ── */}
+      <div style={{ padding: "18px 14px 0" }}>
 
-        {/* 치료 항목 */}
-        <Section title="치료 항목" subtitle="해당하는 치료를 모두 선택해주세요">
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
-            {TREATMENTS.map((t) => (
-              <Chip
-                key={t}
-                label={t}
-                selected={selectedTreatments.includes(t)}
-                onClick={() => toggleTreatment(t)}
-              />
+        {/* ① 작성방식 */}
+        <Section n={1} title="작성방식">
+          <p style={{ fontSize: 15, fontWeight: 700, color: "#1E293B", margin: "0 0 10px" }}>
+            리뷰를 어떻게 작성할까요?
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9 }}>
+            {WRITE_MODES.map(m => (
+              <button
+                key={m.id}
+                onClick={() => setWriteMode(m.id as "AI" | "SELF")}
+                style={{
+                  padding: "14px 10px",
+                  border: `2px solid ${writeMode === m.id ? BLUE : BORDER}`,
+                  borderRadius: 14,
+                  background: writeMode === m.id ? LBLUE : "white",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  transition: "all 0.15s",
+                }}
+              >
+                <div style={{ fontSize: 14, fontWeight: 700, color: writeMode === m.id ? BLUE : "#1E293B", marginBottom: 3 }}>
+                  {m.label}
+                </div>
+                <div style={{ fontSize: 11.5, color: "#94A3B8" }}>{m.sub}</div>
+              </button>
             ))}
           </div>
         </Section>
 
-        {/* 만족한 점 */}
-        <Section title="만족했던 점" subtitle="해당하는 항목을 모두 선택해주세요">
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
-            {SATISFACTIONS.map((s) => (
-              <Chip
-                key={s}
-                label={s}
-                selected={selectedSatisfactions.includes(s)}
-                onClick={() => toggleSatisfaction(s)}
-              />
+        {/* ② 방문유형 */}
+        <Section n={2} title="방문유형">
+          <p style={{ fontSize: 15, fontWeight: 700, color: "#1E293B", margin: "0 0 10px" }}>
+            이번 방문은 어떤 형태였나요?
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9 }}>
+            {VISIT_TYPES.map(v => (
+              <button
+                key={v.id}
+                onClick={() => setVisitType(v.id)}
+                style={{
+                  padding: "14px 10px",
+                  border: `2px solid ${visitType === v.id ? BLUE : BORDER}`,
+                  borderRadius: 14,
+                  background: visitType === v.id ? LBLUE : "white",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  transition: "all 0.15s",
+                }}
+              >
+                <div style={{ fontSize: 14, fontWeight: 700, color: visitType === v.id ? BLUE : "#1E293B", marginBottom: 3 }}>
+                  {v.id}
+                </div>
+                <div style={{ fontSize: 11.5, color: "#94A3B8" }}>{v.sub}</div>
+              </button>
             ))}
           </div>
         </Section>
 
-        {/* 방문 유형 */}
-        <Section title="방문 유형">
-          <div style={{ display: "flex", gap: 9 }}>
-            {VISIT_TYPES.map((v) => (
-              <SelectButton
-                key={v}
-                label={v}
-                selected={visitType === v}
-                onClick={() => setVisitType(v === visitType ? "" : v)}
-              />
-            ))}
-          </div>
-        </Section>
+        {/* ③ 리뷰 스타일 (AI 모드일 때만) */}
+        {writeMode === "AI" && (
+          <Section n={3} title="리뷰 스타일">
+            <p style={{ fontSize: 15, fontWeight: 700, color: "#1E293B", margin: "0 0 10px" }}>
+              어떤 스타일로 작성할까요?
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 9 }}>
+              {REVIEW_STYLES.map(s => (
+                <button
+                  key={s.id}
+                  onClick={() => setReviewStyle(s.id)}
+                  style={{
+                    padding: "12px 6px",
+                    border: `2px solid ${reviewStyle === s.id ? BLUE : BORDER}`,
+                    borderRadius: 14,
+                    background: reviewStyle === s.id ? LBLUE : "white",
+                    color: reviewStyle === s.id ? BLUE : "#1E293B",
+                    fontSize: 13.5,
+                    fontWeight: reviewStyle === s.id ? 700 : 500,
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                  }}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          </Section>
+        )}
 
-        {/* 리뷰 스타일 */}
-        <Section title="리뷰 스타일">
-          <div style={{ display: "flex", gap: 9 }}>
-            {REVIEW_STYLES.map((s) => (
-              <SelectButton
-                key={s}
-                label={s}
-                selected={reviewStyle === s}
-                onClick={() => setReviewStyle(s)}
-              />
-            ))}
-          </div>
-        </Section>
+        {/* ④ 치료선택 (AI 모드) */}
+        {writeMode === "AI" && (
+          <Section n={4} title="치료선택">
+            <p style={{ fontSize: 15, fontWeight: 700, color: "#1E293B", margin: "0 0 10px" }}>
+              어떤 치료를 받으셨나요?
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 9 }}>
+              {TREATMENTS.map(t => {
+                const on = treatments.includes(t.id);
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => toggleArr(treatments, setTreatments, t.id)}
+                    style={{
+                      padding: "14px 6px 12px",
+                      border: `2px solid ${on ? BLUE : BORDER}`,
+                      borderRadius: 14,
+                      background: on ? LBLUE : "white",
+                      cursor: "pointer",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 6,
+                      transition: "all 0.15s",
+                    }}
+                  >
+                    <span style={{ fontSize: 24 }}>{t.icon}</span>
+                    <span style={{
+                      fontSize: 11.5,
+                      fontWeight: on ? 700 : 500,
+                      color: on ? BLUE : "#374151",
+                      whiteSpace: "pre-line",
+                      lineHeight: 1.3,
+                      textAlign: "center",
+                    }}>
+                      {t.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </Section>
+        )}
 
-        {/* 에러 메시지 */}
-        {error && (
-          <div
-            style={{
-              background: "#FFF0F0",
-              border: "1px solid #FFB8B8",
-              borderRadius: 10,
-              padding: "10px 14px",
-              marginBottom: 12,
-              color: "#CC3333",
-              fontSize: 13,
-            }}
-          >
-            ⚠️ {error}
+        {/* ⑤ 경험선택 (AI 모드) */}
+        {writeMode === "AI" && (
+          <Section n={5} title="경험선택">
+            <p style={{ fontSize: 15, fontWeight: 700, color: "#1E293B", margin: "0 0 4px" }}>
+              어떤 점이 좋으셨나요?
+            </p>
+            <p style={{ fontSize: 12, color: "#94A3B8", margin: "0 0 10px" }}>
+              하나만 선택해도 됩니다
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9 }}>
+              {SATISFACTIONS.map(s => {
+                const on = satisfactions.includes(s.id);
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => toggleArr(satisfactions, setSatisfactions, s.id)}
+                    style={{
+                      padding: "13px 12px",
+                      border: `2px solid ${on ? BLUE : BORDER}`,
+                      borderRadius: 14,
+                      background: on ? LBLUE : "white",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      transition: "all 0.15s",
+                      textAlign: "left",
+                    }}
+                  >
+                    <span style={{ fontSize: 18 }}>{s.icon}</span>
+                    <span style={{
+                      fontSize: 13,
+                      fontWeight: on ? 700 : 500,
+                      color: on ? BLUE : "#374151",
+                    }}>
+                      {s.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </Section>
+        )}
+
+        {/* 에러 */}
+        {err && (
+          <div style={{
+            background: "#FEF2F2", border: "1px solid #FECACA",
+            borderRadius: 12, padding: "10px 14px",
+            color: "#DC2626", fontSize: 13, marginBottom: 12,
+          }}>
+            ⚠️ {err}
           </div>
         )}
 
-        {/* 생성 버튼 */}
-        <button
-          onClick={generateReview}
-          disabled={isLoading}
-          style={{
-            width: "100%",
-            padding: "15px 0",
-            background: isLoading
-              ? "#9ABDE8"
-              : `linear-gradient(135deg, ${NAVY} 0%, ${NAVY_LIGHT} 100%)`,
-            color: "white",
-            border: "none",
-            borderRadius: 14,
-            fontSize: 15.5,
-            fontWeight: 700,
-            cursor: isLoading ? "not-allowed" : "pointer",
-            marginBottom: 14,
-            letterSpacing: -0.3,
-            transition: "all 0.2s",
-          }}
-        >
-          {isLoading ? "✨  리뷰 작성 중..." : "✨  AI 리뷰 생성하기"}
-        </button>
-
-        {/* 생성된 리뷰 */}
-        {(generatedReview || isLoading) && (
-          <div
+        {/* AI 생성 버튼 */}
+        {writeMode === "AI" && (
+          <button
+            onClick={generateReview}
+            disabled={loading}
             style={{
-              background: "white",
-              border: `1.5px solid ${MID_BLUE}`,
+              width: "100%",
+              padding: "16px 0",
+              background: loading
+                ? "#93C5FD"
+                : `linear-gradient(135deg, ${NAVY} 0%, ${BLUE} 100%)`,
+              color: "white",
+              border: "none",
               borderRadius: 16,
-              padding: "18px 16px",
+              fontSize: 16,
+              fontWeight: 700,
+              cursor: loading ? "not-allowed" : "pointer",
               marginBottom: 14,
+              letterSpacing: -0.3,
+              boxShadow: loading ? "none" : "0 4px 16px rgba(37,99,235,0.3)",
+              transition: "all 0.2s",
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 12,
-              }}
-            >
-              <span style={{ color: NAVY, fontWeight: 700, fontSize: 13.5 }}>
-                📝 생성된 리뷰
+            {loading ? (
+              <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                <Spinner /> 리뷰 작성 중...
               </span>
-              {generatedReview && !isLoading && (
-                <button
-                  onClick={copyReview}
-                  style={{
-                    padding: "6px 14px",
-                    background: copied ? "#22C55E" : SKY,
-                    color: "white",
-                    border: "none",
-                    borderRadius: 8,
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    transition: "background 0.2s",
-                  }}
-                >
-                  {copied ? "✓ 복사됨" : "복사하기"}
-                </button>
-              )}
+            ) : "✨  AI 리뷰 생성하기"}
+          </button>
+        )}
+
+        {/* ── 리뷰 결과 / 직접입력 박스 ── */}
+        {(writeMode === "SELF" || review || loading) && (
+          <div style={{
+            background: "white",
+            borderRadius: 18,
+            padding: "18px 16px",
+            marginBottom: 14,
+            border: `1px solid ${BORDER}`,
+            boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
+          }}>
+            {/* 별점 */}
+            <div style={{ display: "flex", gap: 3, marginBottom: 12 }}>
+              {[1,2,3,4,5].map(i => (
+                <span key={i} style={{ fontSize: 22, color: GOLD }}>★</span>
+              ))}
             </div>
 
-            {isLoading ? (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  color: "#888",
-                  fontSize: 13.5,
-                }}
-              >
-                <LoadingDots />
-                리뷰를 작성하고 있어요...
-              </div>
-            ) : (
-              <p
-                style={{
-                  color: "#2C3E50",
-                  fontSize: 14.5,
-                  lineHeight: 1.8,
-                  margin: 0,
-                  wordBreak: "keep-all",
-                }}
-              >
-                {generatedReview}
-              </p>
-            )}
-
-            {generatedReview && !isLoading && (
-              <div
-                style={{
-                  marginTop: 12,
-                  paddingTop: 10,
-                  borderTop: "1px solid #EEF4FB",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <span style={{ fontSize: 11.5, color: "#AAB" }}>
-                  {generatedReview.replace(/\s/g, "").length}자
-                </span>
-                <button
-                  onClick={generateReview}
+            {writeMode === "SELF" ? (
+              <>
+                <p style={{ fontSize: 12, color: "#94A3B8", margin: "0 0 8px" }}>
+                  실제 방문 경험을 바탕으로 리뷰를 직접 입력해 주세요.
+                </p>
+                <textarea
+                  value={selfText}
+                  onChange={e => setSelfText(e.target.value)}
+                  placeholder="방문 경험을 자유롭게 작성해주세요..."
                   style={{
-                    background: "none",
-                    border: `1px solid ${MID_BLUE}`,
-                    borderRadius: 8,
-                    padding: "4px 12px",
-                    fontSize: 12,
-                    color: NAVY_LIGHT,
-                    cursor: "pointer",
-                    fontWeight: 500,
+                    width: "100%",
+                    minHeight: 120,
+                    border: `1px solid ${BORDER}`,
+                    borderRadius: 10,
+                    padding: "11px 12px",
+                    fontSize: 14,
+                    lineHeight: 1.7,
+                    color: "#1E293B",
+                    resize: "vertical",
+                    outline: "none",
+                    fontFamily: "inherit",
+                    boxSizing: "border-box",
                   }}
-                >
-                  🔄 다시 생성
-                </button>
+                />
+                {selfText && (
+                  <div style={{ textAlign: "right", fontSize: 11.5, color: "#94A3B8", marginTop: 4 }}>
+                    {selfText.replace(/\s/g, "").length}자
+                  </div>
+                )}
+              </>
+            ) : loading ? (
+              <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#94A3B8", fontSize: 14, minHeight: 80 }}>
+                <Spinner /> 리뷰를 작성하고 있어요...
               </div>
-            )}
+            ) : review ? (
+              <>
+                <div style={{
+                  background: "#F1F5F9",
+                  borderRadius: 8,
+                  padding: "6px 10px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 5,
+                  marginBottom: 10,
+                }}>
+                  <span style={{ fontSize: 11, color: BLUE, fontWeight: 600 }}>✨ AI 생성 문구</span>
+                </div>
+                <p style={{
+                  color: "#1E293B", fontSize: 14.5, lineHeight: 1.85,
+                  margin: 0, wordBreak: "keep-all",
+                }}>
+                  {review}
+                </p>
+                <div style={{
+                  display: "flex", justifyContent: "space-between", alignItems: "center",
+                  marginTop: 12, paddingTop: 10, borderTop: `1px solid ${BORDER}`,
+                }}>
+                  <span style={{ fontSize: 11.5, color: "#94A3B8" }}>
+                    {review.replace(/\s/g, "").length}자
+                  </span>
+                  <button
+                    onClick={generateReview}
+                    style={{
+                      background: "none", border: `1px solid ${BORDER}`,
+                      borderRadius: 8, padding: "5px 12px",
+                      fontSize: 12, color: "#64748B",
+                      cursor: "pointer", fontWeight: 500,
+                    }}
+                  >
+                    🔄 다시 생성
+                  </button>
+                </div>
+              </>
+            ) : null}
           </div>
         )}
 
-        {/* 저작권 안내 */}
-        <p
-          style={{
-            fontSize: 11,
-            color: "#AAB",
-            textAlign: "center",
-            lineHeight: 1.6,
-            padding: "4px 0 8px",
-          }}
-        >
+        {/* 복사 버튼 */}
+        {displayText && (
+          <button
+            onClick={copyText}
+            style={{
+              width: "100%",
+              padding: "17px 0",
+              background: copied
+                ? "#16A34A"
+                : `linear-gradient(135deg, ${NAVY} 0%, ${BLUE} 100%)`,
+              color: "white",
+              border: "none",
+              borderRadius: 16,
+              fontSize: 16,
+              fontWeight: 700,
+              cursor: "pointer",
+              marginBottom: 10,
+              letterSpacing: -0.3,
+              boxShadow: "0 4px 16px rgba(37,99,235,0.3)",
+              transition: "background 0.2s",
+            }}
+          >
+            {copied ? "✓  복사되었습니다!" : "📋  문구 복사하기"}
+          </button>
+        )}
+
+        {/* 안내 문구 */}
+        <p style={{
+          fontSize: 11.5, color: "#94A3B8",
+          textAlign: "center", lineHeight: 1.6,
+          padding: "4px 0 8px",
+        }}>
           ※ 생성된 리뷰는 참고용이며 실제 경험에 맞게 수정 후 사용해주세요.
         </p>
-      </main>
 
-      {/* ─── 하단 고정 버튼 ─────────────────────────── */}
-      <nav
-        style={{
-          position: "fixed",
-          bottom: 0,
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "100%",
-          maxWidth: 430,
-          background: "white",
-          borderTop: `1px solid ${MID_BLUE}`,
-          padding: "10px 12px 16px",
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr 1fr 1fr",
-          gap: 8,
-          boxShadow: "0 -4px 20px rgba(15,35,86,0.09)",
-          zIndex: 200,
-        }}
-      >
-        {BOTTOM_BUTTONS.map((btn) => (
+      </div>
+
+      {/* ── 하단 고정 네비 ── */}
+      <nav style={{
+        position: "fixed",
+        bottom: 0,
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: "100%",
+        maxWidth: 430,
+        background: "white",
+        borderTop: `1px solid ${BORDER}`,
+        padding: "10px 12px 18px",
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr 1fr 1fr",
+        gap: 8,
+        boxShadow: "0 -4px 20px rgba(0,0,0,0.07)",
+        zIndex: 999,
+      }}>
+        {NAV_BUTTONS.map(b => (
           <a
-            key={btn.label}
-            href={btn.url}
-            target={btn.url.startsWith("tel") ? "_self" : "_blank"}
+            key={b.label}
+            href={b.url}
+            target={b.url.startsWith("tel") ? "_self" : "_blank"}
             rel="noopener noreferrer"
             style={{
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              padding: "7px 4px",
-              background: "#F4F8FD",
-              borderRadius: 11,
-              textDecoration: "none",
               gap: 5,
+              padding: "8px 4px",
+              background: "#F8FAFC",
+              borderRadius: 12,
+              textDecoration: "none",
             }}
           >
-            <div
-              style={{
-                width: 34,
-                height: 34,
-                background: btn.bg,
-                borderRadius: 9,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "white",
-                fontSize: 15,
-                fontWeight: 800,
-              }}
-            >
-              {btn.text}
+            <div style={{
+              width: 36, height: 36,
+              background: b.bg,
+              borderRadius: 10,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "white",
+              fontSize: 15,
+              fontWeight: 800,
+            }}>
+              {b.icon}
             </div>
-            <span
-              style={{
-                color: "#333",
-                fontSize: 10,
-                fontWeight: 500,
-                textAlign: "center",
-                lineHeight: 1.35,
-                whiteSpace: "pre-line",
-              }}
-            >
-              {btn.label}
+            <span style={{
+              color: "#374151",
+              fontSize: 10.5,
+              fontWeight: 500,
+              textAlign: "center",
+              lineHeight: 1.3,
+              whiteSpace: "pre-line",
+            }}>
+              {b.label}
             </span>
           </a>
         ))}
       </nav>
+
     </div>
   );
 }
 
-// ─── 하위 컴포넌트 ───────────────────────────────────────
-
-function Section({
-  title,
-  subtitle,
-  children,
-}: {
-  title: string;
-  subtitle?: string;
-  children: React.ReactNode;
-}) {
+// ─── 로딩 스피너 ───────────────────────────────────────
+function Spinner() {
   return (
-    <div
-      style={{
-        background: "white",
-        borderRadius: 16,
-        padding: "14px 14px 16px",
-        marginBottom: 11,
-        boxShadow: "0 1px 6px rgba(15,35,86,0.06)",
-      }}
-    >
-      <div style={{ marginBottom: 11 }}>
-        <p
-          style={{
-            color: NAVY,
-            fontSize: 14.5,
-            fontWeight: 700,
-            margin: 0,
-            letterSpacing: -0.3,
-          }}
-        >
-          {title}
-        </p>
-        {subtitle && (
-          <p style={{ color: "#8899AA", fontSize: 11.5, margin: "2px 0 0" }}>
-            {subtitle}
-          </p>
-        )}
-      </div>
-      {children}
-    </div>
-  );
-}
-
-function Chip({
-  label,
-  selected,
-  onClick,
-}: {
-  label: string;
-  selected: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        padding: "7px 13px",
-        border: `1.5px solid ${selected ? SKY : "#D0DFF0"}`,
-        borderRadius: 20,
-        background: selected ? LIGHT_BLUE : "#FAFCFF",
-        color: selected ? NAVY : "#667",
-        fontSize: 13,
-        fontWeight: selected ? 600 : 400,
-        cursor: "pointer",
-        transition: "all 0.15s",
-        whiteSpace: "nowrap",
-        letterSpacing: -0.2,
-      }}
-    >
-      {selected ? "✓ " : ""}
-      {label}
-    </button>
-  );
-}
-
-function SelectButton({
-  label,
-  selected,
-  onClick,
-}: {
-  label: string;
-  selected: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        flex: 1,
-        padding: "11px 8px",
-        border: `2px solid ${selected ? SKY : "#D0DFF0"}`,
-        borderRadius: 12,
-        background: selected ? LIGHT_BLUE : "#FAFCFF",
-        color: selected ? NAVY : "#667",
-        fontWeight: selected ? 700 : 400,
-        fontSize: 13.5,
-        cursor: "pointer",
-        transition: "all 0.15s",
-        letterSpacing: -0.2,
-      }}
-    >
-      {selected ? "✓ " : ""}
-      {label}
-    </button>
-  );
-}
-
-function LoadingDots() {
-  return (
-    <span style={{ display: "inline-flex", gap: 4, alignItems: "center" }}>
-      {[0, 1, 2].map((i) => (
-        <span
-          key={i}
-          style={{
-            display: "inline-block",
-            width: 6,
-            height: 6,
-            background: "#9ABDE8",
-            borderRadius: "50%",
-            animation: `_dia_bounce 0.9s ease-in-out ${i * 0.18}s infinite`,
-          }}
-        />
-      ))}
-      <style>{`
-        @keyframes _dia_bounce {
-          0%, 100% { transform: translateY(0); }
-          50%       { transform: translateY(-5px); }
-        }
-      `}</style>
-    </span>
+    <>
+      <span style={{
+        display: "inline-block",
+        width: 16, height: 16,
+        border: "2.5px solid rgba(255,255,255,0.35)",
+        borderTopColor: "white",
+        borderRadius: "50%",
+        animation: "_spin 0.7s linear infinite",
+        flexShrink: 0,
+      }} />
+      <style>{`@keyframes _spin{to{transform:rotate(360deg)}}`}</style>
+    </>
   );
 }
