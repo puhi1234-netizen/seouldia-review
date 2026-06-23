@@ -46,10 +46,10 @@ const GOLD   = "#F59E0B";
 
 // ─── 하단 버튼 (URL/전화번호 수정) ────────────────────
 const NAV_BUTTONS = [
-  { label: "네이버\n리뷰", bg: "#03C75A", icon: "N",  url: "https://map.naver.com/p/search/%EC%84%9C%EC%9A%B8%EB%94%94%EC%95%84%EC%B9%98%EA%B3%BC" },
-  { label: "구글\n리뷰",   bg: "#4285F4", icon: "G",  url: "https://www.google.com/maps/search/%EC%84%9C%EC%9A%B8%EB%94%94%EC%95%84%EC%B9%98%EA%B3%BC" },
-  { label: "전화\n하기",   bg: NAVY,      icon: "📞", url: "tel:02-000-0000" },
-  { label: "길\n찾기",     bg: "#FF6B35", icon: "📍", url: "https://map.naver.com/p/search/%EC%84%9C%EC%9A%B8%EB%94%94%EC%95%84%EC%B9%98%EA%B3%BC" },
+  { label: "네이버\n리뷰", bg: "#03C75A", icon: "N",  url: "https://m.place.naver.com/hospital/1834256204/review/visitor?bk_query=%EC%84%9C%EC%9A%B8%EB%94%94%EC%95%84%EC%B9%98%EA%B3%BC%EC%9D%98%EC%9B%90&entry=pll" },
+  { label: "구글\n리뷰",   bg: "#4285F4", icon: "G",  url: "https://www.google.com/search?client=ms-android-samsung-ss&hs=047p&sca_esv=8d74949394e43b3b&sxsrf=APpeQnvnSUe_bVf3HIkRTUim3ZQGEz_AJg:1782212255763&q=%5B+%EB%A7%88%EA%B3%A1+l+%EB%B0%9C%EC%82%B0+%5D+%EC%84%9C%EC%9A%B8%EB%94%94%EC%95%84%EC%B9%98%EA%B3%BC%EC%9D%98%EC%9B%90+%EA%B0%95%EC%84%9C%EA%B5%AC+%EB%A6%AC%EB%B7%B0&uds=AJ5uw1_qit-Q5ymRbxuR6EvNnFNi6d-Q4BT1tabh5L0Z-La-vamN-DnRW2Rpz5JKhBoZcwJijzVC7pbh--cn3EK5hWKgjp1lcGboMSkUMkAMLB05GKSzjOGQYnINBof0WD-oTP1C1C7Jm8OelSyvabGWoTsosnkF3bFNyrbEikUhCL0qtl1c8zQ7eUVGlEtKv4CGc1bNdaXtnIRgXUVch0JdX16SYgiDGXlmQ823j80Djtabs_ZH3aRDCFy4qeqYe5ifjqhl1X0GZpr_hOIvSC3Q4VA3-gJjDU357YuVaynb_7h4-UrKqa8B4PPLG05ggEI5Z1UwT52n8g72cCjPh50kE6SAJJwr9_jBHa04QTnHhyWo1lYGMy2Pq-7B9h1bK1zItbvpkz6Hj00tHwR4-rsvzGLX_N7E62-5S--NLjyjqa7ULJ7XOE6nBmoVtd87TRry3MWOkqo1TJn5b23TSh2QpGTC1uK2eC8gEhSHa3hrbuvLHoNSuT9flfWKhVy4ZsfQnpJHkDLqQDgoZLF7cxnIeGcI956o2zfYPkVKVnAzFSc-x4iEIjCwPlbLpsWMAjQrTsmliV4rRZD7vfwP_5D0d5t0mu2pkLp2nmaVo0b6AMFOVuAU8mkOeu8afCOVICncZcipS9ZGyHIZzO7dulQ269kziVtmShqcWr7bs54kIkxzgaE89zE&si=APenkKm7iecQ4G6P-TsbSMFKIQtv3EFIqRAFw-i8uEbk55Z-_61b8s-s8YyCT7p8__3ow9OveM-Zx1bgynRcTASfORz1hSSJqlRK785BteRzoRaZDdNwnVpiK6OivtbKuQa1Y2RuhjtlEJbdtcYJ_5QWbX8hjjyQdJauejzmL0lOYzUJs6F1u4sHbvIlrD1qY2Cfg_vhWogj&sa=X&sqi=2&ved=2ahUKEwjo5KuDmp2VAxWoW-sIHZqKLmEQk8gLegQIHhAB&ictx=1&biw=435&bih=869&dpr=2.48#ebo=1" },
+  { label: "전화\n하기",   bg: NAVY,      icon: "📞", url: "tel:02-2039-2872" },
+  { label: "길\n찾기",     bg: "#FF6B35", icon: "📍", url: "https://m.place.naver.com/hospital/1834256204/home?entry=pll&bk_query=%EC%84%9C%EC%9A%B8%EB%94%94%EC%95%84%EC%B9%98%EA%B3%BC%EC%9D%98%EC%9B%90" },
 ];
 
 // ─── 섹션 번호 배지 ────────────────────────────────────
