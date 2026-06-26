@@ -23,10 +23,12 @@ const TREATMENTS: Option[] = [
       "잇몸 상태와 보철 계획을 함께 설명해주셔서 전체적인 흐름을 이해하기 좋았습니다",
       "임플란트가 처음이라 걱정이 있었는데 필요한 부분을 과하지 않게 안내받았습니다",
       "마곡역 근처에서 임플란트 상담을 받기 편한 치과라는 느낌이 들었습니다",
+      "임플란트 치료 계획을 단계별로 설명해주셔서 결정하는 데 도움이 됐습니다",
+      "마곡 임플란트 상담을 찾던 중 서울디아치과의 정돈된 안내가 인상적이었습니다",
     ],
   },
   {
-    id: "DIAnate 라미네이트", icon: "✨", label: "DIAnate 라미네이트", keyword: "마곡 라미네이트",
+    id: "DIAnate 라미네이트", icon: "✨", label: "DIAnate\\n라미네이트", keyword: "마곡 라미네이트",
     phrases: [
       "라미네이트 상담에서 제 치아 상태와 원하는 방향을 함께 봐주셔서 신뢰가 갔습니다",
       "앞니 심미치료에 대해 과하지 않게 설명해주셔서 편하게 상담받았습니다",
@@ -36,19 +38,8 @@ const TREATMENTS: Option[] = [
       "심미적인 부분뿐 아니라 치아 상태까지 함께 봐주셔서 상담이 만족스러웠습니다",
       "앞니 라인과 미소 느낌을 세심하게 상담해주셔서 편하게 결정할 수 있었습니다",
       "마곡 심미치료를 찾는 분들이 참고하기 좋은 상담 경험이었습니다",
-    ],
-  },
-  {
-    id: "치아미백", icon: "🌟", label: "치아미백", keyword: "마곡 치아미백",
-    phrases: [
-      "치아미백 진행 과정과 주의사항을 자세히 설명해주셔서 좋았습니다",
-      "미백 진료 전에 궁금한 점을 잘 안내해주셔서 편하게 받을 수 있었습니다",
-      "마곡 치아미백을 알아보다 방문했는데 안내가 깔끔하고 친절했습니다",
-      "미백 후 관리 방법까지 설명해주셔서 집에서도 참고하기 좋았습니다",
-      "중요한 일정을 앞두고 방문했는데 필요한 부분을 차분하게 안내받았습니다",
-      "치아 상태를 먼저 확인하고 가능한 방향을 설명해주셔서 신뢰가 갔습니다",
-      "과장된 설명보다 현실적인 안내를 받을 수 있어 만족스러웠습니다",
-      "마곡역 근처에서 치아미백 상담을 받기 편한 곳이라는 느낌이었습니다",
+      "DIAnate 라미네이트 상담에서 자연스러운 인상까지 함께 고려해주셔서 좋았습니다",
+      "앞니 라미네이트를 고민하던 중 섬세한 상담을 받을 수 있어 만족스러웠습니다",
     ],
   },
   {
@@ -62,6 +53,23 @@ const TREATMENTS: Option[] = [
       "교정 기간과 과정에 대해 무리 없이 설명해주셔서 이해하기 쉬웠습니다",
       "외관이 부담스러운 교정을 고민 중이었는데 투명교정 상담이 편안했습니다",
       "마곡역 근처에서 투명교정 상담을 알아보는 분들에게 참고가 될 것 같습니다",
+      "투명교정 진행 방식과 관리 포인트를 자세히 들을 수 있어 좋았습니다",
+      "마곡 투명교정 상담 중 제 생활 패턴까지 고려해 설명해주셔서 도움이 됐습니다",
+    ],
+  },
+  {
+    id: "치아미백", icon: "🌟", label: "치아미백", keyword: "마곡 치아미백",
+    phrases: [
+      "치아미백 진행 과정과 주의사항을 자세히 설명해주셔서 좋았습니다",
+      "미백 진료 전에 궁금한 점을 잘 안내해주셔서 편하게 받을 수 있었습니다",
+      "마곡 치아미백을 알아보다 방문했는데 안내가 깔끔하고 친절했습니다",
+      "미백 후 관리 방법까지 설명해주셔서 집에서도 참고하기 좋았습니다",
+      "중요한 일정을 앞두고 방문했는데 필요한 부분을 차분하게 안내받았습니다",
+      "치아 상태를 먼저 확인하고 가능한 방향을 설명해주셔서 신뢰가 갔습니다",
+      "과장된 설명보다 현실적인 안내를 받을 수 있어 만족스러웠습니다",
+      "마곡역 근처에서 치아미백 상담을 받기 편한 곳이라는 느낌이었습니다",
+      "치아미백 전후 주의사항을 꼼꼼히 안내받아 안심이 됐습니다",
+      "웨딩이나 중요한 일정을 앞두고 마곡 치아미백을 알아보는 분들에게 참고가 될 것 같습니다",
     ],
   },
   {
@@ -75,10 +83,12 @@ const TREATMENTS: Option[] = [
       "치료 전후로 주의할 점을 알려주셔서 관리하기 수월했습니다",
       "인레이와 레진 등 가능한 방향을 이해하기 쉽게 설명받았습니다",
       "마곡역 근처에서 충치치료를 받기 편한 치과라는 느낌이 들었습니다",
+      "충치치료가 필요한 이유와 치료 선택지를 함께 설명해주셔서 좋았습니다",
+      "마곡 충치치료 상담에서 과하지 않은 안내를 받을 수 있어 부담이 적었습니다",
     ],
   },
   {
-    id: "신경치료", icon: "🔍", label: "신경치료", keyword: "마곡 신경치료",
+    id: "신경치료", icon: "🔬", label: "신경치료", keyword: "마곡 신경치료",
     phrases: [
       "신경치료 과정이 걱정됐는데 단계별로 설명해주셔서 안심이 됐습니다",
       "치료 과정과 이후 주의사항을 꼼꼼하게 안내받아 도움이 됐습니다",
@@ -88,10 +98,27 @@ const TREATMENTS: Option[] = [
       "치료 중 불편감이 없는지 확인해주셔서 부담이 줄었습니다",
       "치료 후 보철까지 이어지는 과정을 이해하기 쉽게 안내받았습니다",
       "마곡역 주변에서 신경치료 상담을 받기 좋은 곳이라는 느낌이었습니다",
+      "신경치료 전 걱정했던 부분을 자세히 설명해주셔서 마음이 편해졌습니다",
+      "마곡 신경치료 상담을 통해 현재 상태와 치료 방향을 이해할 수 있었습니다",
     ],
   },
   {
-    id: "턱관절 치료", icon: "💆", label: "턱관절 치료", keyword: "마곡 턱관절",
+    id: "심미보철", icon: "👑", label: "심미보철", keyword: "마곡 심미보철",
+    phrases: [
+      "크라운과 보철 상담에서 치아 상태와 심미적인 부분을 함께 설명해주셔서 좋았습니다",
+      "심미보철 상담을 받으며 자연스러운 색과 모양에 대해 자세히 들을 수 있었습니다",
+      "마곡 심미보철을 알아보다 방문했는데 상담이 차분하고 이해하기 쉬웠습니다",
+      "보철 치료 방향을 제 상태에 맞춰 설명해주셔서 결정하는 데 도움이 됐습니다",
+      "치아 기능과 보기 좋은 느낌을 함께 고려해주셔서 신뢰가 갔습니다",
+      "크라운이나 브릿지 치료가 필요한 이유를 단계적으로 안내받을 수 있었습니다",
+      "심미적인 결과를 과하게 말하기보다 현실적인 방향으로 설명해주셔서 좋았습니다",
+      "마곡역 근처에서 심미보철 상담을 받기 편한 치과라는 느낌이었습니다",
+      "보철 색상과 형태를 자연스럽게 맞추는 방향으로 상담해주셔서 만족스러웠습니다",
+      "서울디아치과에서 심미보철 상담을 받으며 세심한 진료 흐름을 느낄 수 있었습니다",
+    ],
+  },
+  {
+    id: "턱관절 치료", icon: "💆", label: "턱관절\\n치료", keyword: "마곡 턱관절",
     phrases: [
       "턱관절 불편감에 대해 자세히 들어주시고 관리 방향을 설명해주셔서 도움이 됐습니다",
       "턱관절 진료가 처음이라 걱정했는데 차분하게 안내해주셔서 안심이 됐습니다",
@@ -101,10 +128,12 @@ const TREATMENTS: Option[] = [
       "턱관절 증상을 단순히 넘기지 않고 자세히 봐주셔서 신뢰가 갔습니다",
       "치료 방향을 과하지 않게 안내해주셔서 부담 없이 상담받을 수 있었습니다",
       "마곡역 근처에서 턱관절 진료를 알아보는 분들에게 참고가 될 것 같습니다",
+      "턱관절 불편감에 대해 차분히 설명해주셔서 관리 방향을 이해하기 좋았습니다",
+      "마곡 턱관절 상담을 받으며 평소 습관까지 함께 점검할 수 있어 도움이 됐습니다",
     ],
   },
   {
-    id: "스케일링", icon: "🪥", label: "스케일링", keyword: "마곡 스케일링",
+    id: "스케일링·검진", icon: "🪥", label: "스케일링\\n검진", keyword: "마곡 스케일링",
     phrases: [
       "스케일링 과정이 깔끔했고 필요한 관리 방법도 안내받을 수 있었습니다",
       "구강 상태를 확인해주시면서 관리 방향을 설명해주셔서 도움이 됐습니다",
@@ -114,22 +143,12 @@ const TREATMENTS: Option[] = [
       "진료가 깔끔하게 진행되어 부담 없이 받을 수 있었습니다",
       "검진 결과를 차분히 설명해주셔서 현재 상태를 이해하기 좋았습니다",
       "마곡역 근처에서 정기적으로 다니기 좋은 치과라는 느낌이었습니다",
-    ],
-  },
-  {
-    id: "일반진료", icon: "🏥", label: "일반진료", keyword: "마곡 치과",
-    phrases: [
-      "마곡 치과를 찾다가 방문했는데 진료 전 설명이 자세해서 안심이 됐습니다",
-      "전체적으로 안내가 친절하고 필요한 부분을 차분하게 설명해주셔서 좋았습니다",
-      "치과 진료가 부담스러웠는데 직원분들과 원장님 모두 편안하게 응대해주셨습니다",
-      "처음 방문했는데 진료 과정이 깔끔하고 설명도 이해하기 쉬웠습니다",
-      "검진부터 상담까지 흐름이 체계적으로 느껴져서 신뢰가 갔습니다",
-      "불편했던 부분을 꼼꼼히 확인해주셔서 만족스러운 방문이었습니다",
-      "마곡역 근처에서 편하게 다닐 수 있는 치과를 찾다가 좋은 경험을 했습니다",
-      "필요한 진료를 차분하게 안내받아 다음 방문도 부담이 적을 것 같습니다",
+      "스케일링과 검진을 함께 받으며 관리 방향을 자세히 들을 수 있었습니다",
+      "마곡 스케일링과 정기검진을 편하게 받을 수 있는 치과라는 인상이었습니다",
     ],
   },
 ];
+
 
 const SATISFACTIONS: SimpleOption[] = [
   {
@@ -196,6 +215,78 @@ const SATISFACTIONS: SimpleOption[] = [
       "예약 시간에 맞춰 비교적 원활하게 진료를 받을 수 있었습니다",
       "진료 흐름이 정리되어 있어 시간을 효율적으로 쓸 수 있었습니다",
       "방문부터 진료까지 과정이 복잡하지 않아 편했습니다",
+    ],
+  },
+  {
+    id: "원장님 상담이 좋았어요", icon: "👨‍⚕️", label: "원장님 상담",
+    phrases: [
+      "원장님 상담이 차분하고 자세해서 치료 방향을 이해하기 쉬웠습니다",
+      "직접 설명을 들으니 궁금했던 부분이 정리되어 신뢰가 갔습니다",
+      "현재 상태를 세심하게 봐주시고 필요한 부분을 알려주셔서 좋았습니다",
+      "상담 시간이 부담스럽지 않고 제 상황을 잘 들어주시는 느낌이었습니다",
+    ],
+  },
+  {
+    id: "직원 안내가 좋았어요", icon: "🙋", label: "직원 안내",
+    phrases: [
+      "직원분들의 안내가 친절하고 차분해서 처음 방문해도 편했습니다",
+      "접수와 안내 과정이 정돈되어 있어 병원 이용이 수월했습니다",
+      "궁금한 부분을 친절하게 알려주셔서 방문 내내 편안했습니다",
+      "진료 전후 안내가 자연스럽고 세심해서 만족스러웠습니다",
+    ],
+  },
+  {
+    id: "가격 설명이 명확했어요", icon: "💳", label: "가격 설명",
+    phrases: [
+      "비용과 치료 방향을 함께 설명해주셔서 결정하는 데 도움이 됐습니다",
+      "필요한 진료와 선택 가능한 부분을 구분해서 안내받아 좋았습니다",
+      "가격 설명이 부담스럽지 않고 차분하게 이어져서 이해하기 쉬웠습니다",
+      "치료 계획과 비용을 단계별로 들을 수 있어 신뢰가 갔습니다",
+    ],
+  },
+  {
+    id: "치료 계획이 체계적이었어요", icon: "🗂️", label: "치료 계획",
+    phrases: [
+      "치료 계획을 순서대로 설명해주셔서 전체 흐름을 이해하기 쉬웠습니다",
+      "검사 결과를 바탕으로 진료 방향을 정리해주셔서 좋았습니다",
+      "단계별로 필요한 부분을 안내해주셔서 안정감이 있었습니다",
+      "치료가 어떻게 진행되는지 미리 알 수 있어 마음이 편했습니다",
+    ],
+  },
+  {
+    id: "사후 안내가 꼼꼼했어요", icon: "📌", label: "사후 안내",
+    phrases: [
+      "진료 후 주의사항과 관리 방법을 자세히 안내받아 도움이 됐습니다",
+      "집에서 신경 써야 할 부분까지 설명해주셔서 안심이 됐습니다",
+      "치료 후 관리 방법을 알기 쉽게 알려주셔서 만족스러웠습니다",
+      "진료가 끝난 뒤에도 필요한 안내를 꼼꼼히 받을 수 있었습니다",
+    ],
+  },
+  {
+    id: "세심하게 봐줬어요", icon: "🔎", label: "세심한 진료",
+    phrases: [
+      "불편했던 부분을 세심하게 확인해주셔서 신뢰가 갔습니다",
+      "작은 부분도 놓치지 않고 봐주시는 느낌이라 안심이 됐습니다",
+      "제 상태를 꼼꼼히 확인한 뒤 설명해주셔서 좋았습니다",
+      "진료 과정에서 세심하게 살펴봐주시는 점이 인상적이었습니다",
+    ],
+  },
+  {
+    id: "신뢰감이 들었어요", icon: "🤝", label: "신뢰감",
+    phrases: [
+      "상담과 진료 흐름이 정돈되어 있어 신뢰감이 들었습니다",
+      "과한 설명보다 필요한 부분을 차분하게 안내해주셔서 좋았습니다",
+      "전체적인 응대와 설명에서 안정감이 느껴졌습니다",
+      "처음 방문했지만 차분한 상담 덕분에 믿음이 갔습니다",
+    ],
+  },
+  {
+    id: "자연스러운 방향이 좋았어요", icon: "🌿", label: "자연스러움",
+    phrases: [
+      "무리한 방향보다 자연스러운 결과를 함께 고민해주셔서 좋았습니다",
+      "제 얼굴과 치아 상태에 맞춰 설명해주셔서 상담이 편했습니다",
+      "과하지 않은 방향으로 안내받아 더 신뢰가 갔습니다",
+      "자연스러운 느낌을 중요하게 봐주시는 점이 만족스러웠습니다",
     ],
   },
 ];
@@ -267,6 +358,42 @@ const CONVENIENCES: SimpleOption[] = [
       "시간을 맞추기 어려운 분들에게 도움이 되는 진료 일정이라고 느꼈습니다",
     ],
   },
+  {
+    id: "찾아가기 쉬웠어요", icon: "🗺️", label: "찾아가기 쉬움",
+    phrases: [
+      "위치 안내가 어렵지 않아 처음 방문해도 찾아가기 쉬웠습니다",
+      "마곡역 주변이라 길을 찾는 데 부담이 적었습니다",
+      "처음 가는 곳이었는데 위치가 편해서 방문이 수월했습니다",
+      "마곡 치과를 찾는 분들에게 접근성이 좋은 편이라고 느꼈습니다",
+    ],
+  },
+  {
+    id: "대기공간이 쾌적했어요", icon: "🛋️", label: "쾌적한 대기",
+    phrases: [
+      "대기 공간이 쾌적해서 진료 전에도 편안하게 기다릴 수 있었습니다",
+      "공간이 깔끔하게 정돈되어 있어 첫인상이 좋았습니다",
+      "대기하는 동안에도 분위기가 차분해서 부담이 적었습니다",
+      "병원 내부가 쾌적하게 느껴져 방문 만족도가 높았습니다",
+    ],
+  },
+  {
+    id: "진료 동선이 깔끔했어요", icon: "➡️", label: "깔끔한 동선",
+    phrases: [
+      "접수부터 진료까지 이동과 안내가 깔끔해서 편했습니다",
+      "진료 동선이 정돈되어 있어 처음 방문해도 헷갈리지 않았습니다",
+      "안내 흐름이 자연스러워서 전체적인 방문 과정이 매끄러웠습니다",
+      "검사와 상담이 이어지는 과정이 체계적으로 느껴졌습니다",
+    ],
+  },
+  {
+    id: "야간 진료가 도움됐어요", icon: "🌙", label: "야간 진료",
+    phrases: [
+      "평일 일정이 바쁜데 진료 시간 선택지가 있어 도움이 됐습니다",
+      "퇴근 후에도 방문을 고려할 수 있어 이용하기 편했습니다",
+      "시간 선택의 폭이 있어 바쁜 일정 중에도 부담이 적었습니다",
+      "마곡역 근처에서 시간 맞춰 방문하기 좋은 치과라고 느꼈습니다",
+    ],
+  },
 ];
 
 const EMOTIONS: SimpleOption[] = [
@@ -312,6 +439,51 @@ const EMOTIONS: SimpleOption[] = [
       "심미적인 부분도 제 얼굴과 분위기에 맞춰 설명해주셔서 좋았습니다",
       "자연스러운 결과를 중요하게 봐주시는 느낌이라 상담이 편했습니다",
       "원하는 느낌을 듣고 현실적인 방향을 제안해주셔서 도움이 됐습니다",
+    ],
+  },
+  {
+    id: "결과가 걱정됐어요", icon: "🫣", label: "결과 걱정",
+    phrases: [
+      "결과가 어색하지 않을까 걱정했는데 자연스러운 방향으로 설명해주셔서 좋았습니다",
+      "치료 후 모습이 걱정됐지만 상담을 통해 방향을 이해할 수 있었습니다",
+      "원하는 느낌과 가능한 범위를 함께 설명해주셔서 부담이 줄었습니다",
+      "결과에 대한 걱정을 차분하게 들어주셔서 상담이 편했습니다",
+    ],
+  },
+  {
+    id: "설명이 어려울까 걱정됐어요", icon: "📖", label: "설명 걱정",
+    phrases: [
+      "치료 설명이 어려울까 걱정했는데 쉽게 풀어주셔서 이해하기 좋았습니다",
+      "전문적인 내용을 알기 쉽게 설명해주셔서 마음이 편해졌습니다",
+      "모르는 부분을 질문해도 차분히 답해주셔서 좋았습니다",
+      "어렵게 느껴졌던 진료 내용을 제 눈높이에 맞춰 안내받았습니다",
+    ],
+  },
+  {
+    id: "과잉진료가 걱정됐어요", icon: "🧭", label: "과잉진료 걱정",
+    phrases: [
+      "과한 권유보다 필요한 부분을 중심으로 설명해주셔서 신뢰가 갔습니다",
+      "꼭 필요한 진료와 지켜볼 부분을 구분해주셔서 좋았습니다",
+      "무리하게 진행하는 느낌이 아니라 제 상황에 맞춰 상담받을 수 있었습니다",
+      "치료 선택지를 차분하게 설명해주셔서 부담이 줄었습니다",
+    ],
+  },
+  {
+    id: "오래 걸릴까 걱정됐어요", icon: "⌛", label: "시간 걱정",
+    phrases: [
+      "진료 시간이 오래 걸릴까 걱정했는데 과정 안내가 잘 되어 있어 편했습니다",
+      "진행 순서를 미리 설명해주셔서 시간에 대한 부담이 줄었습니다",
+      "대기와 진료 흐름이 정돈되어 있어 바쁜 일정에도 방문하기 좋았습니다",
+      "필요한 시간을 안내받고 진료를 받을 수 있어 마음이 편했습니다",
+    ],
+  },
+  {
+    id: "재방문이 망설여졌어요", icon: "🔁", label: "재방문 고민",
+    phrases: [
+      "치과 재방문이 늘 망설여졌는데 이번에는 다음 진료도 부담이 덜할 것 같습니다",
+      "상담과 진료 분위기가 편안해서 다시 방문해도 괜찮겠다는 생각이 들었습니다",
+      "처음 걱정보다 경험이 좋아서 이후 진료도 편하게 이어갈 수 있을 것 같습니다",
+      "진료 후 안내까지 잘 받아 재방문에 대한 부담이 줄었습니다",
     ],
   },
 ];
@@ -480,6 +652,43 @@ EMOTIONS.forEach(item => {
 
 BRAND_PHRASES.push(...BRAND_EXTRA_PHRASES);
 
+
+const TONES = [
+  {
+    id: "담백하게",
+    label: "담백하게",
+    sub: "깔끔한 후기",
+    endings: [
+      "전체적으로 군더더기 없이 편안한 진료 경험이었습니다",
+      "마곡역 근처에서 차분하게 진료받기 좋은 치과라고 느꼈습니다",
+      "설명과 안내가 정돈되어 있어 만족스러운 방문이었습니다",
+      "필요한 내용을 잘 안내받아 편하게 진료받을 수 있었습니다",
+    ],
+  },
+  {
+    id: "친근하게",
+    label: "친근하게",
+    sub: "부드러운 후기",
+    endings: [
+      "치과가 부담스러웠던 분들도 편하게 방문해볼 수 있을 것 같습니다",
+      "처음에는 긴장했지만 생각보다 편안하게 다녀올 수 있어 좋았습니다",
+      "직원분들과 원장님 모두 편하게 대해주셔서 기분 좋게 진료받았습니다",
+      "다음에도 부담 없이 방문할 수 있을 것 같은 편안한 분위기였습니다",
+    ],
+  },
+  {
+    id: "감동있게",
+    label: "감동있게",
+    sub: "조금 더 따뜻하게",
+    endings: [
+      "작은 부분까지 신경 써주는 느낌이 들어 기억에 남는 방문이었습니다",
+      "걱정했던 마음을 편하게 만들어준 상담과 진료가 인상적이었습니다",
+      "처음부터 끝까지 세심하게 배려받는 느낌이라 만족도가 높았습니다",
+      "서울디아치과를 선택하길 잘했다는 생각이 드는 경험이었습니다",
+    ],
+  },
+];
+
 const NAV_BTNS = [
   { label: "네이버\n리뷰", bg: "#03C75A", icon: "N",  url: "https://m.place.naver.com/hospital/1834256204/review/visitor?bk_query=%EC%84%9C%EC%9A%B8%EB%94%94%EC%95%84%EC%B9%98%EA%B3%BC%EC%9D%98%EC%9B%90&entry=pll" },
   { label: "구글\n리뷰",   bg: "#4285F4", icon: "G",  url: "https://www.google.com/search?client=ms-android-samsung-ss&hs=047p&sca_esv=8d74949394e43b3b&sxsrf=APpeQnvnSUe_bVf3HIkRTUim3ZQGEz_AJg:1782212255763&q=%5B+%EB%A7%88%EA%B3%A1+l+%EB%B0%9C%EC%82%B0+%5D+%EC%84%9C%EC%9A%B8%EB%94%94%EC%95%84%EC%B9%98%EA%B3%BC%EC%9D%98%EC%9B%90+%EA%B0%95%EC%84%9C%EA%B5%AC+%EB%A6%AC%EB%B7%B0&uds=AJ5uw1_qit-Q5ymRbxuR6EvNnFNi6d-Q4BT1tabh5L0Z-La-vamN-DnRW2Rpz5JKhBoZcwJijzVC7pbh--cn3EK5hWKgjp1lcGboMSkUMkAMLB05GKSzjOGQYnINBof0WD-oTP1C1C7Jm8OelSyvabGWoTsosnkF3bFNyrbEikUhCL0qtl1c8zQ7eUVGlEtKv4CGc1bNdaXtnIRgXUVch0JdX16SYgiDGXlmQ823j80Djtabs_ZH3aRDCFy4qeqYe5ifjqhl1X0GZpr_hOIvSC3Q4VA3-gJjDU357YuVaynb_7h4-UrKqa8B4PPLG05ggEI5Z1UwT52n8g72cCjPh50kE6SAJJwr9_jBHa04QTnHhyWo1lYGMy2Pq-7B9h1bK1zItbvpkz6Hj00tHwR4-rsvzGLX_N7E62-5S--NLjyjqa7ULJ7XOE6nBmoVtd87TRry3MWOkqo1TJn5b23TSh2QpGTC1uK2eC8gEhSHa3hrbuvLHoNSuT9flfWKhVy4ZsfQnpJHkDLqQDgoZLF7cxnIeGcI956o2zfYPkVKVnAzFSc-x4iEIjCwPlbLpsWMAjQrTsmliV4rRZD7vfwP_5D0d5t0mu2pkLp2nmaVo0b6AMFOVuAU8mkOeu8afCOVICncZcipS9ZGyHIZzO7dulQ269kziVtmShqcWr7bs54kIkxzgaE89zE&si=APenkKm7iecQ4G6P-TsbSMFKIQtv3EFIqRAFw-i8uEbk55Z-_61b8s-s8YyCT7p8__3ow9OveM-Zx1bgynRcTASfORz1hSSJqlRK785BteRzoRaZDdNwnVpiK6OivtbKuQa1Y2RuhjtlEJbdtcYJ_5QWbX8hjjyQdJauejzmL0lOYzUJs6F1u4sHbvIlrD1qY2Cfg_vhWogj&sa=X&sqi=2&ved=2ahUKEwjo5KuDmp2VAxWoW-sIHZqKLmEQk8gLegQIHhAB&ictx=1&biw=435&bih=869&dpr=2.48#ebo=1" },
@@ -525,15 +734,16 @@ function findById<T extends { id: string }>(items: T[], ids: string[]) {
   return ids.map(id => items.find(item => item.id === id)).filter(Boolean) as T[];
 }
 
-function createKeywordReview({ treats, sats, conveniences, emotions, visit, style }: {
+function createKeywordReview({ treats, sats, conveniences, emotions, visit, style, tone }: {
   treats: string[];
   sats: string[];
   conveniences: string[];
   emotions: string[];
   visit: string;
   style: string;
+  tone: string;
 }) {
-  const seed = hashText(`${treats.join(",")}-${sats.join(",")}-${conveniences.join(",")}-${emotions.join(",")}-${visit}-${style}-${Date.now()}`);
+  const seed = hashText(`${treats.join(",")}-${sats.join(",")}-${conveniences.join(",")}-${emotions.join(",")}-${visit}-${style}-${tone}-${Date.now()}`);
   const selectedTreatments = findById(TREATMENTS, treats);
   const selectedSats = findById(SATISFACTIONS, sats);
   const selectedConvs = findById(CONVENIENCES, conveniences);
@@ -598,7 +808,9 @@ function createKeywordReview({ treats, sats, conveniences, emotions, visit, styl
   selectedSats.slice(0, satLimit).forEach((item, index) => parts.push(pick(item.phrases, seed + 10 + index)));
   selectedConvs.slice(0, convLimit).forEach((item, index) => parts.push(pick(item.phrases, seed + 20 + index)));
   selectedEmos.slice(0, emoLimit).forEach((item, index) => parts.push(pick(item.phrases, seed + 30 + index)));
-  if (style !== "짧게") parts.push(pick(closings, seed + 40));
+  const selectedTone = TONES.find(item => item.id === tone) || TONES[0];
+  if (style !== "짧게") parts.push(pick([...closings, ...selectedTone.endings], seed + 40));
+  if (style === "짧게" && tone === "친근하게") parts.push("편하게 다녀올 수 있어 좋았습니다");
 
   return trimByStyle(joinSentences(parts), style);
 }
@@ -653,42 +865,48 @@ function Spinner({ color = "white" }: { color?: string }) {
 }
 
 export default function App() {
-  const [mode, setMode] = useState<"AUTO" | "SELF">("AUTO");
   const [visit, setVisit] = useState("처음 방문");
   const [style, setStyle] = useState("자연스럽게");
+  const [tone, setTone] = useState("담백하게");
   const [treats, setTreats] = useState<string[]>([]);
   const [sats, setSats] = useState<string[]>([]);
   const [convs, setConvs] = useState<string[]>([]);
   const [emotions, setEmotions] = useState<string[]>([]);
-  const [selfTxt, setSelfTxt] = useState("");
   const [review, setReview] = useState("");
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [err, setErr] = useState("");
 
-  const toggle = (arr: string[], set: (v: string[]) => void, value: string) => set(arr.includes(value) ? arr.filter(item => item !== value) : [...arr, value]);
+  const toggle = (arr: string[], set: (v: string[]) => void, value: string) =>
+    set(arr.includes(value) ? arr.filter(item => item !== value) : [...arr, value]);
 
   const generate = () => {
-    if (treats.length === 0) { setErr("치료 항목을 하나 이상 선택해주세요."); return; }
-    if (sats.length + convs.length + emotions.length === 0) { setErr("좋았던 점, 편의사항, 걱정 포인트 중 하나 이상 선택해주세요."); return; }
+    if (treats.length === 0) {
+      setErr("치료 항목을 하나 이상 선택해주세요.");
+      return;
+    }
+
+    if (sats.length + convs.length + emotions.length === 0) {
+      setErr("좋았던 점, 편의사항, 걱정 포인트 중 하나 이상 선택해주세요.");
+      return;
+    }
+
     setErr("");
     setLoading(true);
     setReview("");
+
     window.setTimeout(() => {
-      setReview(createKeywordReview({ treats, sats, conveniences: convs, emotions, visit, style }));
+      setReview(createKeywordReview({ treats, sats, conveniences: convs, emotions, visit, style, tone }));
       setLoading(false);
     }, 350);
   };
 
   const copy = async () => {
-    const text = mode === "SELF" ? selfTxt : review;
-    if (!text) return;
-    await navigator.clipboard.writeText(text);
+    if (!review) return;
+    await navigator.clipboard.writeText(review);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
-
-  const displayText = mode === "SELF" ? selfTxt : review;
 
   return (
     <>
@@ -697,78 +915,78 @@ export default function App() {
         <div style={{ background: "white", textAlign: "center", padding: "28px 20px 22px", borderBottom: `1px solid ${BORDER}` }}>
           <div style={{ width: 64, height: 64, background: LBLUE, borderRadius: "50%", fontSize: 30, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>🦷</div>
           <h1 style={{ color: NAVY, fontSize: 22, fontWeight: 800, margin: "0 0 6px", letterSpacing: -0.5 }}>서울디아치과</h1>
-          <p style={{ color: "#64748B", fontSize: 13.5, lineHeight: 1.65 }}>선택만 하면<br />더 다양한 리뷰 문장을 만들어 드립니다</p>
+          <p style={{ color: "#64748B", fontSize: 13.5, lineHeight: 1.65 }}>선택만 하면<br />브랜드 톤에 맞는 리뷰 문장을 만들어 드립니다</p>
         </div>
 
         <div style={{ padding: "16px 12px 0" }}>
           <Card>
-            <SectionHeader n={1} label="작성방식" />
-            <p style={{ fontSize: 15, fontWeight: 700, color: "#1E293B", marginBottom: 10 }}>리뷰를 어떻게 작성할까요?</p>
-            <Toggle2 options={[{ id: "AUTO", label: "키워드 조합", sub: "선택만으로 자동 작성" }, { id: "SELF", label: "직접 입력", sub: "내가 직접 작성" }]} value={mode} onChange={v => setMode(v as "AUTO" | "SELF")} />
-          </Card>
-
-          <Card>
-            <SectionHeader n={2} label="방문유형" />
+            <SectionHeader n={1} label="방문유형" />
             <p style={{ fontSize: 15, fontWeight: 700, color: "#1E293B", marginBottom: 10 }}>이번 방문은 어떤 형태였나요?</p>
             <Toggle2 options={[{ id: "처음 방문", label: "처음 방문", sub: "첫 진료·상담" }, { id: "재방문", label: "재방문", sub: "다시 방문" }]} value={visit} onChange={setVisit} />
           </Card>
 
-          {mode === "AUTO" && (
-            <>
-              <Card>
-                <SectionHeader n={3} label="문장 길이" />
-                <p style={{ fontSize: 15, fontWeight: 700, color: "#1E293B", marginBottom: 10 }}>어느 정도 길이로 만들까요?</p>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
-                  {["짧게", "자연스럽게", "자세하게"].map(item => {
-                    const on = style === item;
-                    return <button key={item} onClick={() => setStyle(item)} style={{ padding: "12px 4px", border: `2px solid ${on ? BLUE : BORDER}`, borderRadius: 12, background: on ? LBLUE : "white", color: on ? BLUE : "#1E293B", fontSize: 13, fontWeight: on ? 700 : 500, cursor: "pointer", width: "100%" }}>{item}</button>;
-                  })}
-                </div>
-              </Card>
+          <Card>
+            <SectionHeader n={2} label="문장 길이" />
+            <p style={{ fontSize: 15, fontWeight: 700, color: "#1E293B", marginBottom: 10 }}>어느 정도 길이로 만들까요?</p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+              {["짧게", "자연스럽게", "자세하게"].map(item => {
+                const on = style === item;
+                return <button key={item} onClick={() => setStyle(item)} style={{ padding: "12px 4px", border: `2px solid ${on ? BLUE : BORDER}`, borderRadius: 12, background: on ? LBLUE : "white", color: on ? BLUE : "#1E293B", fontSize: 13, fontWeight: on ? 700 : 500, cursor: "pointer", width: "100%" }}>{item}</button>;
+              })}
+            </div>
+          </Card>
 
-              <Card>
-                <SectionHeader n={4} label="치료선택" />
-                <p style={{ fontSize: 15, fontWeight: 700, color: "#1E293B", marginBottom: 10 }}>어떤 치료를 받으셨나요?</p>
-                <OptionGrid options={TREATMENTS} values={treats} onToggle={id => toggle(treats, setTreats, id)} columns={3} />
-              </Card>
+          <Card>
+            <SectionHeader n={3} label="문체 선택" />
+            <p style={{ fontSize: 15, fontWeight: 700, color: "#1E293B", marginBottom: 10 }}>어떤 느낌의 리뷰가 좋을까요?</p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+              {TONES.map(item => {
+                const on = tone === item.id;
+                return (
+                  <button key={item.id} onClick={() => setTone(item.id)} style={{ padding: "12px 4px", border: `2px solid ${on ? BLUE : BORDER}`, borderRadius: 12, background: on ? LBLUE : "white", color: on ? BLUE : "#1E293B", fontSize: 13, fontWeight: on ? 700 : 500, cursor: "pointer", width: "100%" }}>
+                    <div>{item.label}</div>
+                    <div style={{ fontSize: 10.5, color: on ? BLUE : "#94A3B8", marginTop: 3 }}>{item.sub}</div>
+                  </button>
+                );
+              })}
+            </div>
+          </Card>
 
-              <Card>
-                <SectionHeader n={5} label="좋았던 점" />
-                <p style={{ fontSize: 15, fontWeight: 700, color: "#1E293B", marginBottom: 4 }}>어떤 점이 좋으셨나요?</p>
-                <p style={{ fontSize: 12, color: "#94A3B8", marginBottom: 12 }}>1~3개 정도 선택하면 자연스럽습니다</p>
-                <OptionGrid options={SATISFACTIONS} values={sats} onToggle={id => toggle(sats, setSats, id)} columns={2} />
-              </Card>
+          <Card>
+            <SectionHeader n={4} label="치료선택" />
+            <p style={{ fontSize: 15, fontWeight: 700, color: "#1E293B", marginBottom: 10 }}>어떤 치료를 받으셨나요?</p>
+            <OptionGrid options={TREATMENTS} values={treats} onToggle={id => toggle(treats, setTreats, id)} columns={3} />
+          </Card>
 
-              <Card>
-                <SectionHeader n={6} label="편의·분위기" />
-                <p style={{ fontSize: 15, fontWeight: 700, color: "#1E293B", marginBottom: 4 }}>방문하면서 좋았던 부분은요?</p>
-                <p style={{ fontSize: 12, color: "#94A3B8", marginBottom: 12 }}>위치, 예약, 분위기 관련 키워드입니다</p>
-                <OptionGrid options={CONVENIENCES} values={convs} onToggle={id => toggle(convs, setConvs, id)} columns={2} />
-              </Card>
+          <Card>
+            <SectionHeader n={5} label="좋았던 점" />
+            <p style={{ fontSize: 15, fontWeight: 700, color: "#1E293B", marginBottom: 4 }}>어떤 점이 좋으셨나요?</p>
+            <p style={{ fontSize: 12, color: "#94A3B8", marginBottom: 12 }}>1~3개 정도 선택하면 자연스럽습니다</p>
+            <OptionGrid options={SATISFACTIONS} values={sats} onToggle={id => toggle(sats, setSats, id)} columns={2} />
+          </Card>
 
-              <Card>
-                <SectionHeader n={7} label="걱정 포인트" />
-                <p style={{ fontSize: 15, fontWeight: 700, color: "#1E293B", marginBottom: 4 }}>진료 전 어떤 점이 걱정되셨나요?</p>
-                <p style={{ fontSize: 12, color: "#94A3B8", marginBottom: 12 }}>선택하면 더 실제 후기처럼 자연스러워집니다</p>
-                <OptionGrid options={EMOTIONS} values={emotions} onToggle={id => toggle(emotions, setEmotions, id)} columns={2} />
-              </Card>
-            </>
-          )}
+          <Card>
+            <SectionHeader n={6} label="편의·분위기" />
+            <p style={{ fontSize: 15, fontWeight: 700, color: "#1E293B", marginBottom: 4 }}>방문하면서 좋았던 부분은요?</p>
+            <p style={{ fontSize: 12, color: "#94A3B8", marginBottom: 12 }}>위치, 예약, 분위기 관련 키워드입니다</p>
+            <OptionGrid options={CONVENIENCES} values={convs} onToggle={id => toggle(convs, setConvs, id)} columns={2} />
+          </Card>
+
+          <Card>
+            <SectionHeader n={7} label="걱정 포인트" />
+            <p style={{ fontSize: 15, fontWeight: 700, color: "#1E293B", marginBottom: 4 }}>진료 전 어떤 점이 걱정되셨나요?</p>
+            <p style={{ fontSize: 12, color: "#94A3B8", marginBottom: 12 }}>선택하면 더 실제 후기처럼 자연스러워집니다</p>
+            <OptionGrid options={EMOTIONS} values={emotions} onToggle={id => toggle(emotions, setEmotions, id)} columns={2} />
+          </Card>
 
           {err && <div style={{ background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: 12, padding: "10px 14px", color: "#DC2626", fontSize: 13, marginBottom: 12 }}>⚠️ {err}</div>}
 
-          {mode === "AUTO" && <button onClick={generate} disabled={loading} style={{ width: "100%", padding: "16px 0", background: loading ? "#93C5FD" : `linear-gradient(135deg,${NAVY} 0%,${BLUE} 100%)`, color: "white", border: "none", borderRadius: 16, fontSize: 16, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", marginBottom: 12, letterSpacing: -0.3, boxShadow: loading ? "none" : "0 4px 16px rgba(37,99,235,0.28)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>{loading ? <><Spinner /> 리뷰 만드는 중...</> : "✨ 자연스러운 리뷰 만들기"}</button>}
+          <button onClick={generate} disabled={loading} style={{ width: "100%", padding: "16px 0", background: loading ? "#93C5FD" : `linear-gradient(135deg,${NAVY} 0%,${BLUE} 100%)`, color: "white", border: "none", borderRadius: 16, fontSize: 16, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", marginBottom: 12, letterSpacing: -0.3, boxShadow: loading ? "none" : "0 4px 16px rgba(37,99,235,0.28)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>{loading ? <><Spinner /> 리뷰 만드는 중...</> : "✨ 자연스러운 리뷰 만들기"}</button>
 
-          {(mode === "SELF" || review || loading) && (
+          {(review || loading) && (
             <div style={{ background: "white", borderRadius: 16, padding: "16px 14px", marginBottom: 12, border: `1px solid ${BORDER}`, boxShadow: "0 2px 10px rgba(0,0,0,0.05)" }}>
               <div style={{ display: "flex", gap: 2, marginBottom: 12 }}>{[1, 2, 3, 4, 5].map(i => <span key={i} style={{ fontSize: 22, color: GOLD }}>★</span>)}</div>
-              {mode === "SELF" ? (
-                <>
-                  <p style={{ fontSize: 12.5, color: "#94A3B8", marginBottom: 8 }}>실제 방문 경험을 바탕으로 직접 입력해 주세요.</p>
-                  <textarea value={selfTxt} onChange={e => setSelfTxt(e.target.value)} placeholder="방문 경험을 자유롭게 작성해주세요..." style={{ width: "100%", minHeight: 120, border: `1px solid ${BORDER}`, borderRadius: 10, padding: "11px 12px", fontSize: 14, lineHeight: 1.7, color: "#1E293B", resize: "vertical", outline: "none", fontFamily: "inherit", boxSizing: "border-box", display: "block" }} />
-                  {selfTxt && <p style={{ textAlign: "right", fontSize: 11.5, color: "#94A3B8", marginTop: 4 }}>{selfTxt.replace(/\s/g, "").length}자</p>}
-                </>
-              ) : loading ? (
+              {loading ? (
                 <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#94A3B8", fontSize: 14, minHeight: 60 }}><Spinner color="#94A3B8" /> 리뷰 문장을 만들고 있어요...</div>
               ) : review ? (
                 <>
@@ -783,7 +1001,7 @@ export default function App() {
             </div>
           )}
 
-          {displayText && <button onClick={copy} style={{ width: "100%", padding: "16px 0", background: copied ? "#16A34A" : `linear-gradient(135deg,${NAVY} 0%,${BLUE} 100%)`, color: "white", border: "none", borderRadius: 16, fontSize: 16, fontWeight: 700, cursor: "pointer", marginBottom: 10, letterSpacing: -0.3, boxShadow: "0 4px 16px rgba(37,99,235,0.28)", transition: "background 0.25s" }}>{copied ? "✓ 복사되었습니다!" : "📋 문구 복사하기"}</button>}
+          {review && <button onClick={copy} style={{ width: "100%", padding: "16px 0", background: copied ? "#16A34A" : `linear-gradient(135deg,${NAVY} 0%,${BLUE} 100%)`, color: "white", border: "none", borderRadius: 16, fontSize: 16, fontWeight: 700, cursor: "pointer", marginBottom: 10, letterSpacing: -0.3, boxShadow: "0 4px 16px rgba(37,99,235,0.28)", transition: "background 0.25s" }}>{copied ? "✓ 복사되었습니다!" : "📋 문구 복사하기"}</button>}
 
           <p style={{ fontSize: 11.5, color: "#94A3B8", textAlign: "center", lineHeight: 1.6, padding: "4px 0 8px" }}>※ 생성된 문장은 참고용 예시입니다. 실제 경험에 맞게 수정 후 사용해주세요.</p>
         </div>
@@ -800,7 +1018,7 @@ function GlobalStyle() {
   return <style>{`
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body, #root { width: 100%; max-width: 100vw; overflow-x: hidden; background: #F8FAFC; -webkit-text-size-adjust: 100%; }
-    button, a, textarea, input { font-family: inherit; -webkit-tap-highlight-color: transparent; }
+    button, a, input { font-family: inherit; -webkit-tap-highlight-color: transparent; }
     @keyframes _spin { to { transform: rotate(360deg); } }
   `}</style>;
 }
