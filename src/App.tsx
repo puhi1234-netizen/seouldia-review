@@ -1300,7 +1300,7 @@ export default function App() {
                       fontWeight: 900,
                       cursor: "pointer",
                     }}>
-                      {copied ? "✓ 복사되었습니다!" : "📋 문구 복사하기"}
+                      {copied ? "✓ 복사되었습니다! 사진도 함께 올려볼까요??📸" : "📋 문구 복사하기"}
                     </button>
                   </>
                 )}
