@@ -1089,32 +1089,129 @@ export default function App() {
   const toggle = (arr: string[], set: (v: string[]) => void, value: string) =>
     set(arr.includes(value) ? arr.filter(item => item !== value) : [...arr, value]);
 
-  const generate = () => {
+  const generate = async () => {
+    if (loading) return;
+  
     if (treats.length === 0) {
       setErr("치료 항목을 하나 이상 선택해주세요.");
       return;
     }
-
+  
     if (sats.length + convs.length + emotions.length === 0) {
       setErr("좋았던 점, 편의사항, 걱정 포인트 중 하나 이상 선택해주세요.");
       return;
     }
-
+  
+    const RATE_KEY = "seouldia_review_generate_log_v1";
+    const COOLDOWN_MS = 25 * 1000; // 같은 브라우저에서 25초 안에 재생성 차단
+    const DAILY_LIMIT = 5; // 같은 브라우저에서 하루 최대 5회
+  
+    const now = Date.now();
+    const oneDayAgo = now - 24 * 60 * 60 * 1000;
+  
+    try {
+      const rawLog = window.localStorage.getItem(RATE_KEY);
+      const parsedLog = rawLog ? JSON.parse(rawLog) : [];
+      const timestamps = Array.isArray(parsedLog)
+        ? parsedLog.filter((time): time is number => typeof time === "number" && time > oneDayAgo)
+        : [];
+  
+      const lastGeneratedAt = timestamps[timestamps.length - 1];
+  
+      if (lastGeneratedAt && now - lastGeneratedAt < COOLDOWN_MS) {
+        const waitSeconds = Math.ceil((COOLDOWN_MS - (now - lastGeneratedAt)) / 1000);
+        setErr(`리뷰 문장은 ${waitSeconds}초 후 다시 만들 수 있습니다.`);
+        return;
+      }
+  
+      if (timestamps.length >= DAILY_LIMIT) {
+        setErr("오늘 생성 가능한 횟수를 모두 사용했습니다. 작성된 문장을 수정해서 사용해주세요.");
+        return;
+      }
+  
+      window.localStorage.setItem(RATE_KEY, JSON.stringify([...timestamps, now]));
+    } catch (error) {
+      console.warn("Local rate limit check failed:", error);
+    }
+  
     setErr("");
     setLoading(true);
+    setCopied(false);
     setReview("");
-
-    window.setTimeout(() => {
-      const nextReview = createKeywordReview({ treats, sats, conveniences: convs, emotions, visit, style, tone });
+  
+    const fallbackReview = () =>
+      createKeywordReview({
+        treats,
+        sats,
+        conveniences: convs,
+        emotions,
+        visit,
+        style,
+        tone,
+      });
+  
+    try {
+      const response = await fetch("/api/generate-review", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          treatments: treats,
+          satisfactions: sats,
+          conveniences: convs,
+          emotions,
+          visit,
+          style,
+          tone,
+        }),
+      });
+  
+      const data: {
+        review?: string;
+        fallback?: boolean;
+        reason?: string;
+        error?: string;
+        retryAfterSeconds?: number;
+      } = await response.json();
+  
+      if (response.status === 429) {
+        const retryAfter = data.retryAfterSeconds
+          ? Math.ceil(data.retryAfterSeconds / 60)
+          : 10;
+  
+        setErr(`요청이 많아 잠시 제한되었습니다. 약 ${retryAfter}분 후 다시 시도해주세요.`);
+        setReview("");
+        return;
+      }
+  
+      if (response.status === 403) {
+        setErr("허용되지 않은 접근입니다. 병원 리뷰 페이지에서 다시 시도해주세요.");
+        setReview("");
+        return;
+      }
+  
+      if (!response.ok) {
+        throw new Error(data.error || "AI 리뷰 생성 요청에 실패했습니다.");
+      }
+  
+      const nextReview =
+        typeof data.review === "string" && data.review.trim().length > 0
+          ? data.review.trim()
+          : fallbackReview();
+  
       setReview(nextReview);
+    } catch (error) {
+      console.error("AI review generation failed:", error);
+      setReview(fallbackReview());
+    } finally {
       setLoading(false);
-
+  
       window.setTimeout(() => {
         resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 80);
-    }, 350);
+    }
   };
-
   const copy = async () => {
     if (!review) return;
     await navigator.clipboard.writeText(review);
