@@ -1319,7 +1319,7 @@ export default function App() {
                       boxShadow: on ? "0 7px 16px rgba(37,99,235,0.24)" : "none",
                     }}>
                       <div style={{ fontSize: 15, fontWeight: 900 }}>{item.label}</div>
-                      <div style={{ fontSize: 10.5, fontWeight: 700, opacity: on ? 0.92 : 0.55, marginTop: 4 }}>{item.sub}</div>
+                      /*<div style={{ fontSize: 10.5, fontWeight: 700, opacity: on ? 0.92 : 0.55, marginTop: 4 }}>{item.sub}</div>*/
                     </button>
                   );
                 })}
