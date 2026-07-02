@@ -1187,18 +1187,6 @@ export default function App() {
         source?: string;
       } = await response.json();
   
-      if (response.status === 429 || response.status === 503) {
-        const retryAfter = data.retryAfterSeconds
-          ? Math.ceil(data.retryAfterSeconds / 60)
-          : 10;
-  
-        setErr(
-          `요청이 많아 잠시 제한되었습니다. 약 ${retryAfter}분 후 다시 시도해주세요.`
-        );
-        setReview("");
-        return;
-      }
-  
       if (response.status === 403) {
         setErr("허용되지 않은 접근입니다. 병원 리뷰 페이지에서 다시 시도해주세요.");
         setReview("");

@@ -15,12 +15,6 @@ type RateLimitEntry = {
   resetAt: number;
 };
 
-type LimitResult = {
-  allowed: boolean;
-  retryAfterSeconds: number;
-  reason?: string;
-};
-
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -28,27 +22,30 @@ const client = new OpenAI({
 const MODEL = process.env.OPENAI_MODEL || "gpt-5.4-mini";
 
 /**
- * 운영 기준
- * - 같은 브라우저 제한은 App.tsx에서 1일 3회
- * - 같은 IP 제한은 서버에서 1일 3회
- * - 짧은 시간 과다 요청은 IP별 / 전체 트래픽 기준으로 차단
+ * 핵심 정책
+ * 1. 사용자는 브라우저에서 하루 3회만 생성 가능(App.tsx에서 처리)
+ * 2. 같은 IP는 하루 OpenAI 호출 3회까지만 허용
+ * 3. IP 제한을 넘거나 트래픽이 몰리면 OpenAI를 호출하지 않고 fallback 신호만 반환
+ * 4. fallback 신호를 받은 App.tsx는 기존 createKeywordReview() 조합문을 표시
+ * 5. 즉, 공격/과다요청이 와도 OpenAI 비용은 막고, 화면은 다운시키지 않음
  */
+
 const DAILY_WINDOW_MS = 24 * 60 * 60 * 1000;
-const MAX_DAILY_GENERATIONS_PER_IP = 3;
+const MAX_OPENAI_CALLS_PER_IP_PER_DAY = 3;
 
 const IP_BURST_WINDOW_MS = 60 * 1000;
-const MAX_IP_REQUESTS_PER_MINUTE = 10;
+const MAX_IP_REQUESTS_PER_MINUTE = 12;
 
 const GLOBAL_BURST_WINDOW_MS = 60 * 1000;
-const MAX_GLOBAL_REQUESTS_PER_MINUTE = 80;
-const GLOBAL_BLOCK_MS = 2 * 60 * 1000;
+const MAX_GLOBAL_REQUESTS_PER_MINUTE = 200;
+const GLOBAL_FALLBACK_MODE_MS = 5 * 60 * 1000;
 
 const MAX_TOTAL_SELECTIONS = 18;
 const MAX_TEXT_LENGTH = 80;
 
-let globalBlockedUntil = 0;
+let globalFallbackModeUntil = 0;
 
-const ipDailySuccessStore = new Map<string, RateLimitEntry>();
+const ipDailyOpenAiStore = new Map<string, RateLimitEntry>();
 const ipBurstStore = new Map<string, RateLimitEntry>();
 const globalBurstStore = new Map<string, RateLimitEntry>();
 
@@ -77,7 +74,6 @@ function getAllowedOrigins() {
 function isAllowedOrigin(req: any) {
   const origin = req.headers.origin as string | undefined;
 
-  // 같은 도메인 직접 호출 또는 일부 서버 환경에서는 origin이 없을 수 있음
   if (!origin) return true;
 
   return getAllowedOrigins().includes(origin);
@@ -86,9 +82,14 @@ function isAllowedOrigin(req: any) {
 function getClientIp(req: any) {
   const forwardedFor = req.headers["x-forwarded-for"];
   const realIp = req.headers["x-real-ip"];
+  const vercelForwardedFor = req.headers["x-vercel-forwarded-for"];
 
   if (typeof forwardedFor === "string" && forwardedFor.length > 0) {
     return forwardedFor.split(",")[0].trim();
+  }
+
+  if (typeof vercelForwardedFor === "string" && vercelForwardedFor.length > 0) {
+    return vercelForwardedFor.split(",")[0].trim();
   }
 
   if (typeof realIp === "string" && realIp.length > 0) {
@@ -103,7 +104,7 @@ function checkFixedWindow(
   key: string,
   windowMs: number,
   maxCount: number
-): LimitResult {
+) {
   const now = Date.now();
   const current = store.get(key);
 
@@ -135,9 +136,9 @@ function checkFixedWindow(
   };
 }
 
-function getDailySuccessCount(ip: string) {
+function getDailyOpenAiCount(ip: string) {
   const now = Date.now();
-  const current = ipDailySuccessStore.get(ip);
+  const current = ipDailyOpenAiStore.get(ip);
 
   if (!current || current.resetAt <= now) {
     return 0;
@@ -146,23 +147,12 @@ function getDailySuccessCount(ip: string) {
   return current.count;
 }
 
-function getDailyRetryAfter(ip: string) {
+function incrementDailyOpenAiCount(ip: string) {
   const now = Date.now();
-  const current = ipDailySuccessStore.get(ip);
+  const current = ipDailyOpenAiStore.get(ip);
 
   if (!current || current.resetAt <= now) {
-    return 0;
-  }
-
-  return Math.ceil((current.resetAt - now) / 1000);
-}
-
-function incrementDailySuccess(ip: string) {
-  const now = Date.now();
-  const current = ipDailySuccessStore.get(ip);
-
-  if (!current || current.resetAt <= now) {
-    ipDailySuccessStore.set(ip, {
+    ipDailyOpenAiStore.set(ip, {
       count: 1,
       resetAt: now + DAILY_WINDOW_MS,
     });
@@ -171,17 +161,20 @@ function incrementDailySuccess(ip: string) {
   }
 
   current.count += 1;
-  ipDailySuccessStore.set(ip, current);
+  ipDailyOpenAiStore.set(ip, current);
 }
 
-function checkGlobalCircuit() {
+function isGlobalFallbackMode() {
+  return globalFallbackModeUntil > Date.now();
+}
+
+function checkGlobalTraffic() {
   const now = Date.now();
 
-  if (globalBlockedUntil > now) {
+  if (globalFallbackModeUntil > now) {
     return {
-      allowed: false,
-      retryAfterSeconds: Math.ceil((globalBlockedUntil - now) / 1000),
-      reason: "global_circuit_open",
+      safeToCallOpenAI: false,
+      reason: "global_fallback_mode",
     };
   }
 
@@ -193,18 +186,17 @@ function checkGlobalCircuit() {
   );
 
   if (!globalLimit.allowed) {
-    globalBlockedUntil = now + GLOBAL_BLOCK_MS;
+    globalFallbackModeUntil = now + GLOBAL_FALLBACK_MODE_MS;
 
     return {
-      allowed: false,
-      retryAfterSeconds: Math.ceil(GLOBAL_BLOCK_MS / 1000),
+      safeToCallOpenAI: false,
       reason: "global_traffic_spike",
     };
   }
 
   return {
-    allowed: true,
-    retryAfterSeconds: 0,
+    safeToCallOpenAI: true,
+    reason: "",
   };
 }
 
@@ -327,6 +319,14 @@ ${keywordCandidates.join(", ")}
 `;
 }
 
+function returnSoftFallback(res: any, reason: string) {
+  return res.status(200).json({
+    review: getRandomFallback(),
+    fallback: true,
+    reason,
+  });
+}
+
 export default async function handler(req: any, res: any) {
   let clientIp = "unknown";
 
@@ -349,16 +349,10 @@ export default async function handler(req: any, res: any) {
 
     clientIp = getClientIp(req);
 
-    const globalCircuit = checkGlobalCircuit();
+    const globalTraffic = checkGlobalTraffic();
 
-    if (!globalCircuit.allowed) {
-      res.setHeader("Retry-After", String(globalCircuit.retryAfterSeconds));
-
-      return res.status(503).json({
-        error: "일시적으로 요청이 많아 리뷰 생성을 잠시 중단했습니다. 잠시 후 다시 시도해주세요.",
-        retryAfterSeconds: globalCircuit.retryAfterSeconds,
-        reason: globalCircuit.reason,
-      });
+    if (!globalTraffic.safeToCallOpenAI || isGlobalFallbackMode()) {
+      return returnSoftFallback(res, globalTraffic.reason || "global_fallback_mode");
     }
 
     const ipBurstLimit = checkFixedWindow(
@@ -369,25 +363,11 @@ export default async function handler(req: any, res: any) {
     );
 
     if (!ipBurstLimit.allowed) {
-      res.setHeader("Retry-After", String(ipBurstLimit.retryAfterSeconds));
-
-      return res.status(429).json({
-        error: "짧은 시간 안에 요청이 많습니다. 잠시 후 다시 시도해주세요.",
-        retryAfterSeconds: ipBurstLimit.retryAfterSeconds,
-        reason: "ip_burst_limit",
-      });
+      return returnSoftFallback(res, "ip_burst_fallback");
     }
 
-    if (getDailySuccessCount(clientIp) >= MAX_DAILY_GENERATIONS_PER_IP) {
-      const retryAfterSeconds = getDailyRetryAfter(clientIp);
-
-      res.setHeader("Retry-After", String(retryAfterSeconds));
-
-      return res.status(429).json({
-        error: "오늘 생성 가능한 횟수를 모두 사용했습니다. 작성된 문장을 수정해서 사용해주세요.",
-        retryAfterSeconds,
-        reason: "ip_daily_limit",
-      });
+    if (getDailyOpenAiCount(clientIp) >= MAX_OPENAI_CALLS_PER_IP_PER_DAY) {
+      return returnSoftFallback(res, "ip_daily_openai_limit");
     }
 
     const body: ReviewRequestBody =
@@ -409,13 +389,7 @@ export default async function handler(req: any, res: any) {
     const tone = toSafeString(body.tone, "자세하게");
 
     if (!process.env.OPENAI_API_KEY) {
-      incrementDailySuccess(clientIp);
-
-      return res.status(200).json({
-        review: getRandomFallback(),
-        fallback: true,
-        reason: "missing_api_key",
-      });
+      return returnSoftFallback(res, "missing_api_key");
     }
 
     const input = buildReviewPrompt({
@@ -427,6 +401,10 @@ export default async function handler(req: any, res: any) {
       conveniences,
       emotions,
     });
+
+    // 실제 OpenAI 호출 직전에만 IP 일일 사용량을 차감합니다.
+    // 실패/성공과 관계없이 OpenAI 비용 또는 시도가 발생했으므로 카운트합니다.
+    incrementDailyOpenAiCount(clientIp);
 
     const response = await client.responses.create({
       model: MODEL,
@@ -442,16 +420,8 @@ export default async function handler(req: any, res: any) {
     const review = cleanReview(response.output_text || "");
 
     if (!review) {
-      incrementDailySuccess(clientIp);
-
-      return res.status(200).json({
-        review: getRandomFallback(),
-        fallback: true,
-        reason: "empty_review",
-      });
+      return returnSoftFallback(res, "empty_review");
     }
-
-    incrementDailySuccess(clientIp);
 
     return res.status(200).json({
       review,
@@ -460,14 +430,6 @@ export default async function handler(req: any, res: any) {
   } catch (error) {
     console.error("Review generation error:", error);
 
-    // API 오류가 나도 사용자에게 문장을 제공하는 경우에는 성공 사용으로 간주하여
-    // 같은 IP의 과도한 반복 생성을 막습니다.
-    incrementDailySuccess(clientIp);
-
-    return res.status(200).json({
-      review: getRandomFallback(),
-      fallback: true,
-      reason: "api_error",
-    });
+    return returnSoftFallback(res, "api_error");
   }
 }
