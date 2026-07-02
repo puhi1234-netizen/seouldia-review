@@ -296,13 +296,17 @@ ${keywordCandidates.join(", ")}
       review,
       source: "openai",
     });
-  } catch (error) {
+} catch (error: any) {
     console.error("Review generation error:", error);
 
     return res.status(200).json({
       review: getRandomFallback(),
       fallback: true,
       reason: "api_error",
+      errorMessage: error?.message || "unknown_error",
+      errorStatus: error?.status || null,
+      errorCode: error?.code || null,
+      errorType: error?.type || null,
     });
   }
 }
