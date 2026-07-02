@@ -664,28 +664,21 @@ const TONES = [
       "마곡역 근처에서 차분하게 진료받기 좋은 치과라고 느꼈습니다",
       "설명과 안내가 정돈되어 있어 만족스러운 방문이었습니다",
       "필요한 내용을 잘 안내받아 편하게 진료받을 수 있었습니다",
+      "처음부터 끝까지 부담스럽지 않게 진료받을 수 있어 좋았습니다",
+      "마곡 치과를 찾는 분들이 참고하기 좋은 방문 경험이었습니다",
     ],
   },
   {
-    id: "친근하게",
-    label: "친근하게",
-    sub: "부드러운 후기",
+    id: "자세하게",
+    label: "자세하게",
+    sub: "키워드 포함 후기",
     endings: [
-      "치과가 부담스러웠던 분들도 편하게 방문해볼 수 있을 것 같습니다",
-      "처음에는 긴장했지만 생각보다 편안하게 다녀올 수 있어 좋았습니다",
-      "직원분들과 원장님 모두 편하게 대해주셔서 기분 좋게 진료받았습니다",
-      "다음에도 부담 없이 방문할 수 있을 것 같은 편안한 분위기였습니다",
-    ],
-  },
-  {
-    id: "감동있게",
-    label: "감동있게",
-    sub: "조금 더 따뜻하게",
-    endings: [
-      "작은 부분까지 신경 써주는 느낌이 들어 기억에 남는 방문이었습니다",
-      "걱정했던 마음을 편하게 만들어준 상담과 진료가 인상적이었습니다",
-      "처음부터 끝까지 세심하게 배려받는 느낌이라 만족도가 높았습니다",
-      "서울디아치과를 선택하길 잘했다는 생각이 드는 경험이었습니다",
+      "마곡역 치과를 찾는 분들이 참고하기 좋은 진료 경험이었다고 느꼈습니다",
+      "상담, 설명, 진료 흐름이 전반적으로 잘 이어져서 만족스러운 방문이었습니다",
+      "마곡 치과를 알아보는 분들에게 서울디아치과의 차분한 상담과 진료 분위기가 도움이 될 것 같습니다",
+      "치료 전 걱정했던 부분부터 진료 후 안내까지 꼼꼼하게 이어져서 기억에 남았습니다",
+      "설명과 상담이 자세해서 처음 방문하는 분들도 비교적 편하게 느낄 수 있을 것 같습니다",
+      "치료 과정과 관리 방법까지 함께 안내받을 수 있어 전체적으로 만족스러웠습니다",
     ],
   },
 ];
@@ -1074,8 +1067,7 @@ function OptionGrid({ options, values, onToggle, columns = 2 }: { options: { id:
 
 export default function App() {
   const [visit, setVisit] = useState("처음 방문");
-  const style = "자연스럽게";
-  const [tone, setTone] = useState("담백하게");
+  const [tone, setTone] = useState("자세하게");
   const [treats, setTreats] = useState<string[]>([]);
   const [sats, setSats] = useState<string[]>([]);
   const [convs, setConvs] = useState<string[]>([]);
@@ -1103,8 +1095,8 @@ export default function App() {
     }
   
     const RATE_KEY = "seouldia_review_generate_log_v1";
-    const COOLDOWN_MS = 25 * 1000; // 같은 브라우저에서 25초 안에 재생성 차단
-    const DAILY_LIMIT = 5; // 같은 브라우저에서 하루 최대 5회
+    const COOLDOWN_MS = 25 * 1000;
+    const DAILY_LIMIT = 5;
   
     const now = Date.now();
     const oneDayAgo = now - 24 * 60 * 60 * 1000;
@@ -1113,19 +1105,26 @@ export default function App() {
       const rawLog = window.localStorage.getItem(RATE_KEY);
       const parsedLog = rawLog ? JSON.parse(rawLog) : [];
       const timestamps = Array.isArray(parsedLog)
-        ? parsedLog.filter((time): time is number => typeof time === "number" && time > oneDayAgo)
+        ? parsedLog.filter(
+            (time): time is number =>
+              typeof time === "number" && time > oneDayAgo
+          )
         : [];
   
       const lastGeneratedAt = timestamps[timestamps.length - 1];
   
       if (lastGeneratedAt && now - lastGeneratedAt < COOLDOWN_MS) {
-        const waitSeconds = Math.ceil((COOLDOWN_MS - (now - lastGeneratedAt)) / 1000);
+        const waitSeconds = Math.ceil(
+          (COOLDOWN_MS - (now - lastGeneratedAt)) / 1000
+        );
         setErr(`리뷰 문장은 ${waitSeconds}초 후 다시 만들 수 있습니다.`);
         return;
       }
   
       if (timestamps.length >= DAILY_LIMIT) {
-        setErr("오늘 생성 가능한 횟수를 모두 사용했습니다. 작성된 문장을 수정해서 사용해주세요.");
+        setErr(
+          "오늘 생성 가능한 횟수를 모두 사용했습니다. 작성된 문장을 수정해서 사용해주세요."
+        );
         return;
       }
   
@@ -1146,7 +1145,7 @@ export default function App() {
         conveniences: convs,
         emotions,
         visit,
-        style,
+        style: tone,
         tone,
       });
   
@@ -1162,7 +1161,7 @@ export default function App() {
           conveniences: convs,
           emotions,
           visit,
-          style,
+          style: tone,
           tone,
         }),
       });
@@ -1173,6 +1172,7 @@ export default function App() {
         reason?: string;
         error?: string;
         retryAfterSeconds?: number;
+        source?: string;
       } = await response.json();
   
       if (response.status === 429) {
@@ -1180,7 +1180,9 @@ export default function App() {
           ? Math.ceil(data.retryAfterSeconds / 60)
           : 10;
   
-        setErr(`요청이 많아 잠시 제한되었습니다. 약 ${retryAfter}분 후 다시 시도해주세요.`);
+        setErr(
+          `요청이 많아 잠시 제한되었습니다. 약 ${retryAfter}분 후 다시 시도해주세요.`
+        );
         setReview("");
         return;
       }
@@ -1193,6 +1195,13 @@ export default function App() {
   
       if (!response.ok) {
         throw new Error(data.error || "AI 리뷰 생성 요청에 실패했습니다.");
+      }
+  
+      // 핵심: API가 fallback:true를 보내면 api의 짧은 문장을 쓰지 않고
+      // App.tsx에 남아있는 createKeywordReview 조합문을 사용합니다.
+      if (data.fallback) {
+        setReview(fallbackReview());
+        return;
       }
   
       const nextReview =
@@ -1212,6 +1221,7 @@ export default function App() {
       }, 80);
     }
   };
+  
   const copy = async () => {
     if (!review) return;
     await navigator.clipboard.writeText(review);
@@ -1294,7 +1304,7 @@ export default function App() {
           <Card>
             <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
               <SectionHeader n={6} label="문체 선택" />
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, width: "100%" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, width: "100%" }}>
                 {TONES.map(item => {
                   const on = tone === item.id;
                   return (
