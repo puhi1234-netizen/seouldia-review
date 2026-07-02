@@ -1095,42 +1095,54 @@ export default function App() {
     }
   
     const RATE_KEY = "seouldia_review_generate_log_v1";
-    const COOLDOWN_MS = 25 * 1000;
-    const DAILY_LIMIT = 5;
+    const COOLDOWN_MS = 10 * 1000;
+    const DAILY_LIMIT = 3;
   
     const now = Date.now();
     const oneDayAgo = now - 24 * 60 * 60 * 1000;
   
-    try {
-      const rawLog = window.localStorage.getItem(RATE_KEY);
-      const parsedLog = rawLog ? JSON.parse(rawLog) : [];
-      const timestamps = Array.isArray(parsedLog)
-        ? parsedLog.filter(
-            (time): time is number =>
-              typeof time === "number" && time > oneDayAgo
-          )
-        : [];
+    const getTodayTimestamps = () => {
+      try {
+        const rawLog = window.localStorage.getItem(RATE_KEY);
+        const parsedLog = rawLog ? JSON.parse(rawLog) : [];
   
-      const lastGeneratedAt = timestamps[timestamps.length - 1];
-  
-      if (lastGeneratedAt && now - lastGeneratedAt < COOLDOWN_MS) {
-        const waitSeconds = Math.ceil(
-          (COOLDOWN_MS - (now - lastGeneratedAt)) / 1000
-        );
-        setErr(`리뷰 문장은 ${waitSeconds}초 후 다시 만들 수 있습니다.`);
-        return;
+        return Array.isArray(parsedLog)
+          ? parsedLog.filter(
+              (time): time is number =>
+                typeof time === "number" && time > oneDayAgo
+            )
+          : [];
+      } catch (error) {
+        console.warn("Local rate limit read failed:", error);
+        return [];
       }
+    };
   
-      if (timestamps.length >= DAILY_LIMIT) {
-        setErr(
-          "오늘 생성 가능한 횟수를 모두 사용했습니다. 작성된 문장을 수정해서 사용해주세요."
-        );
-        return;
+    const recordSuccessfulGeneration = () => {
+      try {
+        const latest = getTodayTimestamps();
+        window.localStorage.setItem(RATE_KEY, JSON.stringify([...latest, Date.now()]));
+      } catch (error) {
+        console.warn("Local rate limit write failed:", error);
       }
+    };
   
-      window.localStorage.setItem(RATE_KEY, JSON.stringify([...timestamps, now]));
-    } catch (error) {
-      console.warn("Local rate limit check failed:", error);
+    const timestamps = getTodayTimestamps();
+    const lastGeneratedAt = timestamps[timestamps.length - 1];
+  
+    if (lastGeneratedAt && now - lastGeneratedAt < COOLDOWN_MS) {
+      const waitSeconds = Math.ceil(
+        (COOLDOWN_MS - (now - lastGeneratedAt)) / 1000
+      );
+      setErr(`리뷰 문장은 ${waitSeconds}초 후 다시 만들 수 있습니다.`);
+      return;
+    }
+  
+    if (timestamps.length >= DAILY_LIMIT) {
+      setErr(
+        "오늘 생성 가능한 횟수를 모두 사용했습니다. 작성된 문장을 수정해서 사용해주세요."
+      );
+      return;
     }
   
     setErr("");
@@ -1175,7 +1187,7 @@ export default function App() {
         source?: string;
       } = await response.json();
   
-      if (response.status === 429) {
+      if (response.status === 429 || response.status === 503) {
         const retryAfter = data.retryAfterSeconds
           ? Math.ceil(data.retryAfterSeconds / 60)
           : 10;
@@ -1197,10 +1209,9 @@ export default function App() {
         throw new Error(data.error || "AI 리뷰 생성 요청에 실패했습니다.");
       }
   
-      // 핵심: API가 fallback:true를 보내면 api의 짧은 문장을 쓰지 않고
-      // App.tsx에 남아있는 createKeywordReview 조합문을 사용합니다.
       if (data.fallback) {
         setReview(fallbackReview());
+        recordSuccessfulGeneration();
         return;
       }
   
@@ -1210,9 +1221,11 @@ export default function App() {
           : fallbackReview();
   
       setReview(nextReview);
+      recordSuccessfulGeneration();
     } catch (error) {
       console.error("AI review generation failed:", error);
       setReview(fallbackReview());
+      recordSuccessfulGeneration();
     } finally {
       setLoading(false);
   

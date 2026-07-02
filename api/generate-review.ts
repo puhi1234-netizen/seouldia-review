@@ -15,19 +15,42 @@ type RateLimitEntry = {
   resetAt: number;
 };
 
+type LimitResult = {
+  allowed: boolean;
+  retryAfterSeconds: number;
+  reason?: string;
+};
+
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Vercel 환경변수 OPENAI_MODEL을 따로 만들면 모델만 쉽게 바꿀 수 있습니다.
-// 기본값은 mini 모델입니다.
 const MODEL = process.env.OPENAI_MODEL || "gpt-5.4-mini";
 
-const WINDOW_MS = 10 * 60 * 1000; // 10분
-const MAX_REQUESTS_PER_WINDOW = 5; // 같은 IP 기준 10분에 5회
+/**
+ * 운영 기준
+ * - 같은 브라우저 제한은 App.tsx에서 1일 3회
+ * - 같은 IP 제한은 서버에서 1일 3회
+ * - 짧은 시간 과다 요청은 IP별 / 전체 트래픽 기준으로 차단
+ */
+const DAILY_WINDOW_MS = 24 * 60 * 60 * 1000;
+const MAX_DAILY_GENERATIONS_PER_IP = 3;
+
+const IP_BURST_WINDOW_MS = 60 * 1000;
+const MAX_IP_REQUESTS_PER_MINUTE = 10;
+
+const GLOBAL_BURST_WINDOW_MS = 60 * 1000;
+const MAX_GLOBAL_REQUESTS_PER_MINUTE = 80;
+const GLOBAL_BLOCK_MS = 2 * 60 * 1000;
 
 const MAX_TOTAL_SELECTIONS = 18;
 const MAX_TEXT_LENGTH = 80;
+
+let globalBlockedUntil = 0;
+
+const ipDailySuccessStore = new Map<string, RateLimitEntry>();
+const ipBurstStore = new Map<string, RateLimitEntry>();
+const globalBurstStore = new Map<string, RateLimitEntry>();
 
 const fallbackReviews = [
   "마곡역 근처에서 임플란트 상담을 알아보다가 서울디아치과에 방문했습니다. 상담부터 진료 안내까지 차분하게 진행되어 처음 방문했는데도 편하게 느껴졌습니다.",
@@ -40,8 +63,6 @@ const defaultAllowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
 ];
-
-const rateLimitStore = new Map<string, RateLimitEntry>();
 
 function getAllowedOrigins() {
   const envOrigins = process.env.ALLOWED_ORIGINS
@@ -56,7 +77,7 @@ function getAllowedOrigins() {
 function isAllowedOrigin(req: any) {
   const origin = req.headers.origin as string | undefined;
 
-  // 같은 도메인 직접 호출 또는 일부 서버 환경에서는 origin이 없을 수 있습니다.
+  // 같은 도메인 직접 호출 또는 일부 서버 환경에서는 origin이 없을 수 있음
   if (!origin) return true;
 
   return getAllowedOrigins().includes(origin);
@@ -77,14 +98,19 @@ function getClientIp(req: any) {
   return "unknown";
 }
 
-function checkRateLimit(ip: string) {
+function checkFixedWindow(
+  store: Map<string, RateLimitEntry>,
+  key: string,
+  windowMs: number,
+  maxCount: number
+): LimitResult {
   const now = Date.now();
-  const current = rateLimitStore.get(ip);
+  const current = store.get(key);
 
   if (!current || current.resetAt <= now) {
-    rateLimitStore.set(ip, {
+    store.set(key, {
       count: 1,
-      resetAt: now + WINDOW_MS,
+      resetAt: now + windowMs,
     });
 
     return {
@@ -93,7 +119,7 @@ function checkRateLimit(ip: string) {
     };
   }
 
-  if (current.count >= MAX_REQUESTS_PER_WINDOW) {
+  if (current.count >= maxCount) {
     return {
       allowed: false,
       retryAfterSeconds: Math.ceil((current.resetAt - now) / 1000),
@@ -101,7 +127,80 @@ function checkRateLimit(ip: string) {
   }
 
   current.count += 1;
-  rateLimitStore.set(ip, current);
+  store.set(key, current);
+
+  return {
+    allowed: true,
+    retryAfterSeconds: 0,
+  };
+}
+
+function getDailySuccessCount(ip: string) {
+  const now = Date.now();
+  const current = ipDailySuccessStore.get(ip);
+
+  if (!current || current.resetAt <= now) {
+    return 0;
+  }
+
+  return current.count;
+}
+
+function getDailyRetryAfter(ip: string) {
+  const now = Date.now();
+  const current = ipDailySuccessStore.get(ip);
+
+  if (!current || current.resetAt <= now) {
+    return 0;
+  }
+
+  return Math.ceil((current.resetAt - now) / 1000);
+}
+
+function incrementDailySuccess(ip: string) {
+  const now = Date.now();
+  const current = ipDailySuccessStore.get(ip);
+
+  if (!current || current.resetAt <= now) {
+    ipDailySuccessStore.set(ip, {
+      count: 1,
+      resetAt: now + DAILY_WINDOW_MS,
+    });
+
+    return;
+  }
+
+  current.count += 1;
+  ipDailySuccessStore.set(ip, current);
+}
+
+function checkGlobalCircuit() {
+  const now = Date.now();
+
+  if (globalBlockedUntil > now) {
+    return {
+      allowed: false,
+      retryAfterSeconds: Math.ceil((globalBlockedUntil - now) / 1000),
+      reason: "global_circuit_open",
+    };
+  }
+
+  const globalLimit = checkFixedWindow(
+    globalBurstStore,
+    "global",
+    GLOBAL_BURST_WINDOW_MS,
+    MAX_GLOBAL_REQUESTS_PER_MINUTE
+  );
+
+  if (!globalLimit.allowed) {
+    globalBlockedUntil = now + GLOBAL_BLOCK_MS;
+
+    return {
+      allowed: false,
+      retryAfterSeconds: Math.ceil(GLOBAL_BLOCK_MS / 1000),
+      reason: "global_traffic_spike",
+    };
+  }
 
   return {
     allowed: true,
@@ -153,75 +252,31 @@ function isSelectionTooLarge(
   );
 }
 
-export default async function handler(req: any, res: any) {
-  if (req.method === "OPTIONS") {
-    return res.status(204).end();
-  }
+function buildReviewPrompt(params: {
+  visit: string;
+  style: string;
+  tone: string;
+  treatments: string[];
+  satisfactions: string[];
+  conveniences: string[];
+  emotions: string[];
+}) {
+  const { visit, style, tone, treatments, satisfactions, conveniences, emotions } =
+    params;
 
-  if (req.method !== "POST") {
-    return res.status(405).json({
-      error: "Method not allowed",
-    });
-  }
+  const keywordCandidates = [
+    "서울디아치과",
+    "마곡역 치과",
+    "마곡 치과",
+    ...treatments,
+    ...satisfactions,
+    ...conveniences,
+    ...emotions,
+  ]
+    .filter(Boolean)
+    .slice(0, 16);
 
-  try {
-    if (!isAllowedOrigin(req)) {
-      return res.status(403).json({
-        error: "허용되지 않은 요청입니다.",
-      });
-    }
-
-    const ip = getClientIp(req);
-    const rateLimit = checkRateLimit(ip);
-
-    if (!rateLimit.allowed) {
-      res.setHeader("Retry-After", String(rateLimit.retryAfterSeconds));
-
-      return res.status(429).json({
-        error: "요청이 너무 많습니다. 잠시 후 다시 시도해주세요.",
-        retryAfterSeconds: rateLimit.retryAfterSeconds,
-      });
-    }
-
-    if (!process.env.OPENAI_API_KEY) {
-      return res.status(200).json({
-        review: getRandomFallback(),
-        fallback: true,
-        reason: "missing_api_key",
-      });
-    }
-
-    const body: ReviewRequestBody =
-      typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
-
-    const treatments = toStringArray(body.treatments);
-    const satisfactions = toStringArray(body.satisfactions);
-    const conveniences = toStringArray(body.conveniences);
-    const emotions = toStringArray(body.emotions);
-
-    if (isSelectionTooLarge(treatments, satisfactions, conveniences, emotions)) {
-      return res.status(400).json({
-        error: "선택 항목이 너무 많습니다.",
-      });
-    }
-
-    const visit = toSafeString(body.visit, "처음 방문");
-    const style = toSafeString(body.style, "자세하게");
-    const tone = toSafeString(body.tone, "자세하게");
-
-    const keywordCandidates = [
-      "서울디아치과",
-      "마곡역 치과",
-      "마곡 치과",
-      ...treatments,
-      ...satisfactions,
-      ...conveniences,
-      ...emotions,
-    ]
-      .filter(Boolean)
-      .slice(0, 16);
-
-    const input = `
+  return `
 서울디아치과를 방문한 환자가 직접 남기는 느낌의 리뷰 초안을 작성해주세요.
 
 [작성 목표]
@@ -263,13 +318,115 @@ ${keywordCandidates.join(", ")}
 - 환자가 직접 경험한 것처럼 자연스럽게 작성
 - 너무 광고 문구처럼 보이지 않게 작성
 - 과장된 감정 표현은 가능하지만 부자연스러운 홍보 문구처럼 만들지 말 것
-- "100% 보장", "완치 보장", "무조건"처럼 너무 단정적인 표현은 피할 것
+- "100% 보장", "완치 보장", "무조건", "절대"처럼 너무 단정적인 표현은 피할 것
 - 따옴표 없이 리뷰 문장만 출력
 
 [문체별 방향]
 - 담백하게: 차분하고 신뢰감 있는 후기. 과장 없이 정돈된 느낌.
 - 자세하게: 치료명, 지역명, 상담, 설명, 분위기, 대기, 걱정 포인트를 더 많이 녹인 후기. SEO와 AI 검색 노출을 조금 더 의식한 문장.
 `;
+}
+
+export default async function handler(req: any, res: any) {
+  let clientIp = "unknown";
+
+  if (req.method === "OPTIONS") {
+    return res.status(204).end();
+  }
+
+  if (req.method !== "POST") {
+    return res.status(405).json({
+      error: "Method not allowed",
+    });
+  }
+
+  try {
+    if (!isAllowedOrigin(req)) {
+      return res.status(403).json({
+        error: "허용되지 않은 요청입니다.",
+      });
+    }
+
+    clientIp = getClientIp(req);
+
+    const globalCircuit = checkGlobalCircuit();
+
+    if (!globalCircuit.allowed) {
+      res.setHeader("Retry-After", String(globalCircuit.retryAfterSeconds));
+
+      return res.status(503).json({
+        error: "일시적으로 요청이 많아 리뷰 생성을 잠시 중단했습니다. 잠시 후 다시 시도해주세요.",
+        retryAfterSeconds: globalCircuit.retryAfterSeconds,
+        reason: globalCircuit.reason,
+      });
+    }
+
+    const ipBurstLimit = checkFixedWindow(
+      ipBurstStore,
+      clientIp,
+      IP_BURST_WINDOW_MS,
+      MAX_IP_REQUESTS_PER_MINUTE
+    );
+
+    if (!ipBurstLimit.allowed) {
+      res.setHeader("Retry-After", String(ipBurstLimit.retryAfterSeconds));
+
+      return res.status(429).json({
+        error: "짧은 시간 안에 요청이 많습니다. 잠시 후 다시 시도해주세요.",
+        retryAfterSeconds: ipBurstLimit.retryAfterSeconds,
+        reason: "ip_burst_limit",
+      });
+    }
+
+    if (getDailySuccessCount(clientIp) >= MAX_DAILY_GENERATIONS_PER_IP) {
+      const retryAfterSeconds = getDailyRetryAfter(clientIp);
+
+      res.setHeader("Retry-After", String(retryAfterSeconds));
+
+      return res.status(429).json({
+        error: "오늘 생성 가능한 횟수를 모두 사용했습니다. 작성된 문장을 수정해서 사용해주세요.",
+        retryAfterSeconds,
+        reason: "ip_daily_limit",
+      });
+    }
+
+    const body: ReviewRequestBody =
+      typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
+
+    const treatments = toStringArray(body.treatments);
+    const satisfactions = toStringArray(body.satisfactions);
+    const conveniences = toStringArray(body.conveniences);
+    const emotions = toStringArray(body.emotions);
+
+    if (isSelectionTooLarge(treatments, satisfactions, conveniences, emotions)) {
+      return res.status(400).json({
+        error: "선택 항목이 너무 많습니다.",
+      });
+    }
+
+    const visit = toSafeString(body.visit, "처음 방문");
+    const style = toSafeString(body.style, "자세하게");
+    const tone = toSafeString(body.tone, "자세하게");
+
+    if (!process.env.OPENAI_API_KEY) {
+      incrementDailySuccess(clientIp);
+
+      return res.status(200).json({
+        review: getRandomFallback(),
+        fallback: true,
+        reason: "missing_api_key",
+      });
+    }
+
+    const input = buildReviewPrompt({
+      visit,
+      style,
+      tone,
+      treatments,
+      satisfactions,
+      conveniences,
+      emotions,
+    });
 
     const response = await client.responses.create({
       model: MODEL,
@@ -285,6 +442,8 @@ ${keywordCandidates.join(", ")}
     const review = cleanReview(response.output_text || "");
 
     if (!review) {
+      incrementDailySuccess(clientIp);
+
       return res.status(200).json({
         review: getRandomFallback(),
         fallback: true,
@@ -292,21 +451,23 @@ ${keywordCandidates.join(", ")}
       });
     }
 
+    incrementDailySuccess(clientIp);
+
     return res.status(200).json({
       review,
       source: "openai",
     });
-} catch (error: any) {
+  } catch (error) {
     console.error("Review generation error:", error);
+
+    // API 오류가 나도 사용자에게 문장을 제공하는 경우에는 성공 사용으로 간주하여
+    // 같은 IP의 과도한 반복 생성을 막습니다.
+    incrementDailySuccess(clientIp);
 
     return res.status(200).json({
       review: getRandomFallback(),
       fallback: true,
       reason: "api_error",
-      errorMessage: error?.message || "unknown_error",
-      errorStatus: error?.status || null,
-      errorCode: error?.code || null,
-      errorType: error?.type || null,
     });
   }
 }
