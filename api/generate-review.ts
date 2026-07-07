@@ -242,7 +242,28 @@ function isSelectionTooLarge(
     MAX_TOTAL_SELECTIONS
   );
 }
+type WeightedOption = {
+  weight: number;
+};
 
+function pickWeighted<T extends WeightedOption>(items: T[]): T {
+  const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
+  let random = Math.random() * totalWeight;
+
+  for (const item of items) {
+    random -= item.weight;
+
+    if (random <= 0) {
+      return item;
+    }
+  }
+
+  return items[items.length - 1];
+}
+
+function randomInt(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 function buildReviewPrompt(params: {
   visit: string;
   style: string;
@@ -294,6 +315,126 @@ function buildReviewPrompt(params: {
   ]
     .filter(Boolean)
     .slice(0, 36);
+    const selectedTone = tone || style;
+const isSimpleTone = selectedTone === "간단하게";
+
+const lengthProfiles = isSimpleTone
+  ? [
+      {
+        name: "초단문",
+        weight: 45,
+        sentenceRule: "1문장 또는 짧은 2문장",
+        charRule: "35~120자",
+        keywordRule:
+          "SEO 키워드는 없어도 됩니다. 넣는다면 1개만 자연스럽게 사용하세요.",
+      },
+      {
+        name: "짧은 후기",
+        weight: 40,
+        sentenceRule: "1~2문장",
+        charRule: "70~160자",
+        keywordRule: "SEO 키워드는 0~1개만 자연스럽게 사용하세요.",
+      },
+      {
+        name: "보통 후기",
+        weight: 15,
+        sentenceRule: "2~3문장",
+        charRule: "130~230자",
+        keywordRule: "SEO 키워드는 1개 정도만 자연스럽게 사용하세요.",
+      },
+    ]
+  : [
+      {
+        name: "초단문",
+        weight: 20,
+        sentenceRule: "1~2문장",
+        charRule: "50~140자",
+        keywordRule: "SEO 키워드는 0~1개만 자연스럽게 사용하세요.",
+      },
+      {
+        name: "짧은 후기",
+        weight: 35,
+        sentenceRule: "2문장",
+        charRule: "90~190자",
+        keywordRule: "SEO 키워드는 1개 정도만 자연스럽게 사용하세요.",
+      },
+      {
+        name: "보통 후기",
+        weight: 30,
+        sentenceRule: "2~3문장",
+        charRule: "150~280자",
+        keywordRule: "SEO 키워드는 1~2개만 자연스럽게 사용하세요.",
+      },
+      {
+        name: "자세한 후기",
+        weight: 15,
+        sentenceRule: "3~4문장",
+        charRule: "230~390자",
+        keywordRule: "SEO 키워드는 2~3개까지 자연스럽게 사용하세요.",
+      },
+    ];
+
+const reactionStyles = [
+  {
+    name: "감탄형 / 호들갑형",
+    weight: 18,
+    guide:
+      "진짜 만족한 사람이 쓴 것처럼 살짝 감탄이 들어갑니다. 예: 생각보다 너무 괜찮았어요, 괜히 걱정했나 싶었어요. 단, 광고처럼 과장하지 않습니다.",
+  },
+  {
+    name: "담백 사실형",
+    weight: 24,
+    guide:
+      "감정 표현은 적고 방문 이유, 설명, 대기, 치료명 같은 사실 위주로 차분하게 씁니다.",
+  },
+  {
+    name: "짧은 메모형",
+    weight: 25,
+    guide:
+      "실제 네이버 리뷰처럼 짧고 간단합니다. 예: 좋았음. 설명 잘해주시고 생각보다 편했어요. 1~2문장으로 씁니다.",
+  },
+  {
+    name: "걱정 해소형",
+    weight: 16,
+    guide:
+      "치과 공포, 통증, 비용, 치료 걱정이 있었는데 생각보다 괜찮았다는 흐름입니다.",
+  },
+  {
+    name: "정보형 후기",
+    weight: 7,
+    guide:
+      "치료명, 상담, 설명, 예약, 위치, 병원 분위기 같은 정보를 중심으로 씁니다.",
+  },
+  {
+    name: "추천형 후기",
+    weight: 4,
+    guide:
+      "주변 사람에게 말하듯 자연스럽게 추천합니다. 추천은 부드럽게만 표현합니다.",
+  },
+  {
+    name: "조용한 만족형",
+    weight: 4,
+    guide:
+      "크게 호들갑은 없지만 만족감이 느껴지는 톤입니다. 담담하고 자연스럽게 씁니다.",
+  },
+  {
+    name: "현실 후기형",
+    weight: 2,
+    guide:
+      "너무 예쁘게 다듬은 문장보다 실제 사람이 쓴 것처럼 생활감 있게 씁니다.",
+  },
+];
+
+const forcedLength = pickWeighted(lengthProfiles);
+const forcedReaction = pickWeighted(reactionStyles);
+const forcedPersonaNumber = randomInt(1, 50);
+
+console.log("review random setting", {
+  tone: selectedTone,
+  personaNumber: forcedPersonaNumber,
+  lengthProfile: forcedLength.name,
+  reactionStyle: forcedReaction.name,
+});
 
   return `
 서울디아치과를 방문한 환자가 직접 남기는 느낌의 리뷰 초안을 작성해주세요.
@@ -315,20 +456,39 @@ ${conveniences.length > 0 ? conveniences.join(", ") : "선택 없음"}
 ${emotions.length > 0 ? emotions.join(", ") : "선택 없음"}
 
 [사용자가 선택한 작성 스타일]
-${selectedStyle}
+${tone || style}
+
+[이번 생성 강제 설정]
+- 작성자 페르소나 번호: ${forcedPersonaNumber}번
+- 리뷰 성격: ${forcedReaction.name}
+- 리뷰 성격 설명: ${forcedReaction.guide}
+- 길이 타입: ${forcedLength.name}
+- 문장 수: ${forcedLength.sentenceRule}
+- 글자 수: ${forcedLength.charRule}
+- 키워드 사용량: ${forcedLength.keywordRule}
+
+[중요]
+- 위 강제 설정을 반드시 따르세요.
+- 특히 길이 타입이 "초단문" 또는 "짧은 후기"이면 절대 길게 쓰지 마세요.
+- "자세하게"가 선택되어 있어도 항상 긴 글을 쓰라는 뜻이 아닙니다.
+- 실제 네이버 리뷰처럼 짧은 후기, 담백한 후기, 호들갑스러운 후기, 정보형 후기가 섞여야 합니다.
+- 이번 응답에서는 지정된 문장 수와 글자 수를 우선하세요.
 
 [SEO 키워드 후보]
 ${keywordCandidates.join(", ")}
 
+
 [작성 방식]
-1. 아래 작성자 페르소나 중 하나를 마음속으로 고르세요. 출력에는 페르소나 번호를 쓰지 마세요.
-2. 아래 첫 문장 패턴 중 하나를 참고하되, 그대로 베끼지 말고 자연스럽게 변형하세요.
-3. 아래 말투 20종을 섞어 사용하세요. 한 가지 말투만 반복하지 마세요.
-4. 아래 마무리 문장 후보 중 하나를 참고하되, 매번 다르게 변형하세요.
-5. 이모지는 가끔만 사용하세요. 70%는 이모지 없음, 20%는 😊, 5%는 👍, 5%는 ✨ 정도 느낌으로 자연스럽게만 사용하세요.
-6. SEO 키워드는 후보 중 1~3개만 자연스럽게 포함하세요. 키워드를 나열하지 마세요.
-7. "마곡 치과" 또는 "마곡역 치과" 중 하나는 가능하면 자연스럽게 1회 포함하세요.
-8. "서울디아치과"는 자연스럽게 1회 이하로만 사용하세요.
+1. 작성자 페르소나는 위에서 지정된 번호를 사용하세요.
+2. 리뷰 성격은 위에서 지정된 성격을 반드시 따르세요.
+3. 길이는 위에서 지정된 길이 타입을 반드시 따르세요.
+4. 아래 첫 문장 패턴 중 하나를 참고하되, 그대로 베끼지 말고 자연스럽게 변형하세요.
+5. 아래 말투 20종을 섞어 사용하세요. 한 가지 말투만 반복하지 마세요.
+6. 아래 마무리 문장 후보 중 하나를 참고하되, 매번 다르게 변형하세요.
+7. 이모지는 가끔만 사용하세요. 75%는 이모지 없음, 15%는 😊, 5%는 👍, 5%는 ✨ 정도 느낌으로 자연스럽게만 사용하세요.
+8. SEO 키워드는 지정된 키워드 사용량에 맞춰 자연스럽게 포함하세요. 키워드를 나열하지 마세요.
+9. "마곡 치과" 또는 "마곡역 치과" 중 하나는 가능하면 자연스럽게 1회 포함하세요.
+10. "서울디아치과"는 자연스럽게 1회 이하로만 사용하세요.
 
 [통증 표현 규칙]
 - "안 아팠어요", "하나도 안 아팠어요", "생각보다 안 아팠어요", "거의 안 아팠어요", "큰 통증 없이 받았어요", "걱정했던 것보다 편했어요" 같은 표현은 환자의 주관적 경험처럼 자연스럽게 사용할 수 있습니다.
@@ -577,12 +737,12 @@ ${keywordCandidates.join(", ")}
 [출력 규칙]
 - 출력은 리뷰 문장만 작성합니다.
 - 따옴표, 번호, 제목 없이 작성합니다.
-- "간단하게" 선택 시 1~2문장, 60~180자 정도로 작성합니다.
-- "자세하게" 선택 시 보통 2~4문장, 140~380자 정도로 작성합니다.
-- "자세하게"를 선택해도 매번 길게 쓰지 마세요. 약 30% 정도는 2문장짜리 자연스러운 후기로 작성하세요.
-- 약 50%는 3문장, 약 20%는 4문장 정도의 느낌으로 길이를 다양하게 섞어주세요.
-- 가끔은 "좋았음", "괜찮았어요", "편하게 받고 왔어요"처럼 실제 리뷰에 가까운 짧은 표현도 자연스럽게 포함하세요.
-- 너무 설명이 많은 블로그형 문장보다, 실제 환자가 남긴 네이버 리뷰처럼 자연스럽게 작성하세요.
+- 이번 리뷰의 길이 타입은 "${forcedLength.name}"입니다.
+- 문장 수는 ${forcedLength.sentenceRule}로 작성합니다.
+- 전체 길이는 ${forcedLength.charRule} 정도로 작성합니다.
+- ${forcedLength.keywordRule}
+- "좋았음", "괜찮았어요", "편하게 받고 왔어요"처럼 실제 네이버 리뷰에 가까운 짧은 표현도 자연스럽게 사용할 수 있습니다.
+- 너무 설명이 많은 블로그형 문장보다, 실제 환자가 남긴 리뷰처럼 자연스럽게 작성하세요.
 - 선택한 치료와 장점이 자연스럽게 드러나야 합니다.
 `;
 }
