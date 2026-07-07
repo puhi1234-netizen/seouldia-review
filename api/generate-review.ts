@@ -736,7 +736,7 @@ ${keywordCandidates.join(", ")}
 
 [출력 규칙]
 - 출력은 리뷰 문장만 작성합니다.
-- 따옴표, 번호, 제목 없이 작성합니다.
+- 따옴표, 번호, 제목, 특수문자 없이 작성합니다.
 - 이번 리뷰의 길이 타입은 "${forcedLength.name}"입니다.
 - 문장 수는 ${forcedLength.sentenceRule}로 작성합니다.
 - 전체 길이는 ${forcedLength.charRule} 정도로 작성합니다.
