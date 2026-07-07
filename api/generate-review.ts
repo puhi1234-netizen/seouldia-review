@@ -276,7 +276,7 @@ function buildReviewPrompt(params: {
   const { visit, style, tone, treatments, satisfactions, conveniences, emotions } =
     params;
 
-  const selectedStyle = tone || style || "자세하게";
+
 
   const keywordCandidates = [
     "마곡 치과",
@@ -315,7 +315,7 @@ function buildReviewPrompt(params: {
   ]
     .filter(Boolean)
     .slice(0, 36);
-    const selectedTone = tone || style;
+    const selectedTone = tone || style || "자세하게";
 const isSimpleTone = selectedTone === "간단하게";
 
 const lengthProfiles = isSimpleTone
@@ -436,7 +436,7 @@ console.log("review random setting", {
   reactionStyle: forcedReaction.name,
 });
 
-  return `
+  const input = `
 서울디아치과를 방문한 환자가 직접 남기는 느낌의 리뷰 초안을 작성해주세요.
 이번 리뷰는 "매번 다른 사람이 쓴 것처럼" 자연스러워야 합니다.
 
@@ -497,8 +497,9 @@ ${keywordCandidates.join(", ")}
 - 다만 병원이 결과를 보장하는 말투는 피하세요. 예: "누구나 안 아픔", "100% 무통 보장", "절대 안 아픔 보장", "무조건 통증 없음"
 - 통증 표현은 너무 자주 반복하지 말고, 전체 리뷰에서 0~1회 정도만 자연스럽게 사용하세요.
 
-[리뷰 성격/반응 강도 랜덤화]
-이번 리뷰는 아래 스타일 중 하나를 마음속으로 고른 뒤 작성하세요.
+[리뷰 성격 참고표]
+아래 내용은 리뷰 성격을 이해하기 위한 참고표입니다.
+이번 리뷰에서는 반드시 위에서 지정된 "리뷰 성격"을 우선하세요.
 출력에는 스타일 이름을 쓰지 마세요.
 
 1. 감탄형 / 호들갑형
@@ -535,15 +536,6 @@ ${keywordCandidates.join(", ")}
 - 너무 예쁘게 다듬은 문장보다 실제 사람이 쓴 것처럼 약간 생활감 있게 씁니다.
 - 예: "치과 계속 미루다가 갔는데 생각보다 괜찮았어요", "집 근처라 갔는데 설명 잘해주셔서 좋았습니다"
 
-[비율 느낌]
-- 감탄형/호들갑형: 약 15%
-- 담백 사실형: 약 25%
-- 짧은 메모형: 약 15%
-- 걱정 해소형: 약 20%
-- 정보형 후기: 약 10%
-- 추천형 후기: 약 5%
-- 조용한 만족형: 약 5%
-- 현실 후기형: 약 5%
 
 매번 같은 스타일로 쓰지 말고, 실제 리뷰 목록에 여러 사람이 섞여 있는 것처럼 작성하세요.
 
@@ -745,6 +737,16 @@ ${keywordCandidates.join(", ")}
 - 너무 설명이 많은 블로그형 문장보다, 실제 환자가 남긴 리뷰처럼 자연스럽게 작성하세요.
 - 선택한 치료와 장점이 자연스럽게 드러나야 합니다.
 `;
+return {
+  input,
+  debug: {
+    personaNumber: forcedPersonaNumber,
+    reactionStyle: forcedReaction.name,
+    lengthProfile: forcedLength.name,
+    sentenceRule: forcedLength.sentenceRule,
+    charRule: forcedLength.charRule,
+  },
+};
 }
 
 function returnSoftFallback(res: any, reason: string) {
@@ -820,7 +822,7 @@ export default async function handler(req: any, res: any) {
       return returnSoftFallback(res, "missing_api_key");
     }
 
-    const input = buildReviewPrompt({
+    const { input, debug } = buildReviewPrompt({
       visit,
       style,
       tone,
@@ -852,6 +854,7 @@ export default async function handler(req: any, res: any) {
     return res.status(200).json({
       review,
       source: "openai",
+      debug,
     });
   } catch (error) {
     console.error("Review generation error:", error);
